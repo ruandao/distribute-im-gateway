@@ -7,8 +7,8 @@ import (
 
 	config "github.com/ruandao/distribute-im-gateway/src/Comet/Config"
 	handler "github.com/ruandao/distribute-im-gateway/src/Comet/Handler"
-	logx "github.com/ruandao/distribute-im-gateway/src/Comet/Logx"
 	"github.com/ruandao/distribute-im-gateway/src/lib"
+	logx "github.com/ruandao/distribute-im-gateway/src/lib/logx"
 )
 
 func runHttpSer(wg *sync.WaitGroup) {
@@ -20,7 +20,7 @@ func runHttpSer(wg *sync.WaitGroup) {
 
 	handler.Register()
 
-	logx.Infof("Start server http on: %v\n", config.AuthAddr)
+	logx.Infof("Start server http on: %v\n", config.CometAddr)
 	if err := http.ListenAndServe(config.AuthAddr, http.DefaultServeMux); err != nil {
 		fmt.Printf("Comet run: %v\n", err)
 		wg.Done()

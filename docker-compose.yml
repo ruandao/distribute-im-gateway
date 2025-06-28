@@ -1,0 +1,20 @@
+version: '3.5'
+
+services:
+  configServer:
+    image: bitnami/etcd:3.6.1
+    container_name: etcd
+    ports:
+      - 2379:2379
+      - 2380:2380
+    environment:
+      # 允许无认证启动
+      - ALLOW_NONE_AUTHENTICATION=yes
+      # 向客户端通告的URL
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+      # 监听客户端连接的地址
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379 
+    # 添加重启策略
+    restart: always  
+
+

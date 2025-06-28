@@ -2,10 +2,12 @@ package config
 
 import (
 	"fmt"
+	"sync/atomic"
+	"time"
 
 	lib "github.com/ruandao/distribute-im-gateway/src/lib"
 	"github.com/ruandao/distribute-im-gateway/src/traffic"
-	"github.com/spf13/viper"
+	"go.etcd.io/etcd/clientv3"
 )
 
 type Config struct {
@@ -14,59 +16,50 @@ type Config struct {
 	TrafficConfig traffic.Config
 }
 
-type xConfig struct {
-	CometServer struct {
-		Host string `mapstructure:"host"`
-		Port int    `mapstructure:"port"`
-	} `mapstructure:"cometServer"`
-	Database struct {
-		User     string `mapstructure:"user"`
-		Password string `mapstructure:"password"`
-		DBName   string `mapstructure:"dbname"`
-	} `mapstructure:"database"`
-	Debug       bool `mapstructure:"debug"`
-	AuthService struct {
-		Host string `mapstructure:"host"`
-		Port int    `mapstructure:"port"`
-	} `mapstructure:"authServer"`
-	TrafficConfig struct {
-		Host string `mapstructure:"host"`
-		Port int    `mapstructure:"port"`
-	} `mapstructure:"traffic"`
+var configVal atomic.Value
+var configCh chan Config
+
+func init() {
+	configCh = make(chan Config)
+	writeAppConf(Config{})
+
+	go func() {
+		for {
+			conf := <-configCh
+			writeAppConf(conf)
+		}
+	}()
 }
 
-func (c *xConfig) GenServerConfig() Config {
-	if c.CometServer.Host == "" {
-		c.CometServer.Host = "127.0.0.1"
-	}
-
-	var config Config
-	config.CometAddr = fmt.Sprintf("%v:%v", c.CometServer.Host, c.CometServer.Port)
-	config.AuthAddr = fmt.Sprintf("%v:%v", c.AuthService.Host, c.AuthService.Port)
-	config.TrafficConfig = traffic.Config{Addr: fmt.Sprintf("%v:%v", c.TrafficConfig.Host, c.TrafficConfig.Port)}
-
-	return config
+func readAppConf() Config {
+	return configVal.Load().(Config)
 }
-
-var config *xConfig
+func writeAppConf(conf Config) {
+	configVal.Store(conf)
+}
 
 func Load() (Config, lib.XError) {
-	if config != nil {
-		return config.GenServerConfig(), nil
+
+	bConfig, xerr := lib.LoadBasicConfig()
+	if xerr != nil {
+		return readAppConf(), xerr
 	}
 
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
-
-	if err := viper.ReadInConfig(); err != nil {
-		return Config{}, lib.NewXError(err, "load config.yaml fail")
+	cli, err := clientv3.New(clientv3.Config{
+		Endpoints:   []string{bConfig.EtcdConfigCenter},
+		DialTimeout: 5 * time.Second,
+	})
+	if err != nil {
+		return readAppConf(), lib.NewXError(err, "Connect Etcd Failed")
 	}
+	defer cli.Close()
 
-	if err := viper.Unmarshal(config); err != nil {
-		return Config{}, lib.NewXError(err, "config.yaml parse fail....")
-
+	var config = Config{}
+	keyPath := fmt.Sprintf("/service/%v/%v/config", bConfig.BusinessName, bConfig.Version)
+	if xerr := lib.LoadAppConfig(keyPath, &config); xerr != nil {
+		return config, xerr
 	}
+	writeAppConf(config)
 
-	return config.GenServerConfig(), nil
+	return readAppConf(), nil
 }

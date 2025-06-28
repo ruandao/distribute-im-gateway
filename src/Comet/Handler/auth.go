@@ -6,8 +6,8 @@ import (
 	"github.com/ruandao/distribute-im-gateway/src/traffic"
 
 	config "github.com/ruandao/distribute-im-gateway/src/Comet/Config"
-	logx "github.com/ruandao/distribute-im-gateway/src/Comet/Logx"
 	"github.com/ruandao/distribute-im-gateway/src/Comet/service/gen/pb_auth"
+	"github.com/ruandao/distribute-im-gateway/src/lib/logx"
 )
 
 // 认证中间件
