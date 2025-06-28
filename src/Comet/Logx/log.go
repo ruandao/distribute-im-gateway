@@ -9,11 +9,11 @@ func Infof(format string, others ...interface{}) {
 	fmt.Printf(format, others...)
 }
 
-func Error(format string, others ...interface{}) {
+func Errorf(format string, others ...interface{}) {
 	fmt.Printf(format, others...)
 }
 
 func Fatal(err error) {
-	fmt.Println(err)
+	fmt.Printf("%+v\n", err)
 	os.Exit(1)
 }

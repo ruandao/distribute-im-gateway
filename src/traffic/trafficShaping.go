@@ -2,8 +2,10 @@ package traffic
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
+	"github.com/ruandao/distribute-im-gateway/src/lib"
 	"google.golang.org/grpc"
 )
 
@@ -26,7 +28,7 @@ func NewContext(config Config, r *http.Request) context.Context {
 	return rCtx
 }
 
-func GetRPCClient(authAddr string, context context.Context) (conn *grpc.ClientConn, err error) {
-	conn, err = grpc.NewClient(authAddr)
-	return conn, err
+func GetRPCClient(authAddr string, context context.Context) (*grpc.ClientConn, lib.XError) {
+	conn, err := grpc.NewClient(authAddr)
+	return conn, lib.NewXError(err, fmt.Sprintf("get client for %v fail: %v", authAddr, err))
 }

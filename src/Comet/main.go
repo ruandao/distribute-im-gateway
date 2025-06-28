@@ -8,18 +8,20 @@ import (
 	config "github.com/ruandao/distribute-im-gateway/src/Comet/Config"
 	handler "github.com/ruandao/distribute-im-gateway/src/Comet/Handler"
 	logx "github.com/ruandao/distribute-im-gateway/src/Comet/Logx"
+	"github.com/ruandao/distribute-im-gateway/src/lib"
 )
 
 func runHttpSer(wg *sync.WaitGroup) {
-	config, err := config.Load()
-	if err != nil {
-		logx.Fatal(err)
+	config, xerr := config.Load()
+	if xerr != nil {
+		xerr = lib.NewXError(xerr, "jdkf")
+		logx.Fatal(xerr)
 	}
 
 	handler.Register()
 
-	logx.Infof("Start server http on: %v\n", config.Addr)
-	if err = http.ListenAndServe(config.Addr, http.DefaultServeMux); err != nil {
+	logx.Infof("Start server http on: %v\n", config.AuthAddr)
+	if err := http.ListenAndServe(config.AuthAddr, http.DefaultServeMux); err != nil {
 		fmt.Printf("Comet run: %v\n", err)
 		wg.Done()
 	}

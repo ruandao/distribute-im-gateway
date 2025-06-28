@@ -11,19 +11,27 @@ import (
 )
 
 // 认证中间件
-var authHandler = func(w http.ResponseWriter, r *http.Request) {
+var authHandler = func(w http.ResponseWriter, r *http.Request) bool {
 	defer r.Body.Close()
 	w.Write([]byte("hello world!!!"))
 
-	config, _ := config.Load()
+	config, xerr := config.Load()
+	if xerr != nil {
+		logx.Fatal(xerr)
+	}
 	ctx := traffic.NewContext(config.TrafficConfig, r)
-	conn, err := traffic.GetRPCClient(config.AuthAddr, ctx)
-	if err != nil {
-		logx.Error(err)
+	conn, xerr := traffic.GetRPCClient(config.AuthAddr, ctx)
+	if xerr != nil {
+		logx.Errorf("%v", xerr)
+		return false
 	}
 
 	authRequest := &pb_auth.Request{}
 	client := pb_auth.NewAuthClient(conn)
 	res, err := client.Check(ctx, authRequest)
-
+	if err != nil {
+		w.Write([]byte("not auth"))
+		return false
+	}
+	return res.Result.Result
 }
