@@ -1,27 +1,29 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"sync"
+	"time"
 
 	config "github.com/ruandao/distribute-im-gateway/src/Comet/Config"
 	handler "github.com/ruandao/distribute-im-gateway/src/Comet/Handler"
-	"github.com/ruandao/distribute-im-gateway/src/lib"
 	logx "github.com/ruandao/distribute-im-gateway/src/lib/logx"
 )
 
 func runHttpSer(wg *sync.WaitGroup) {
-	config, xerr := config.Load()
+	ctx, _ := context.WithTimeout(context.Background(), time.Second)
+	config, xerr := config.Load(ctx)
 	if xerr != nil {
-		xerr = lib.NewXError(xerr, "jdkf")
 		logx.Fatal(xerr)
 	}
 
+	fmt.Printf("config: %v\n", config)
 	handler.Register()
 
-	logx.Infof("Start server http on: %v\n", config.CometAddr)
-	if err := http.ListenAndServe(config.AuthAddr, http.DefaultServeMux); err != nil {
+	logx.Infof("Start http server on: %v\n", config.BConfig.RegisterAddr())
+	if err := http.ListenAndServe(config.BConfig.ListenAddr(), http.DefaultServeMux); err != nil {
 		fmt.Printf("Comet run: %v\n", err)
 		wg.Done()
 	}

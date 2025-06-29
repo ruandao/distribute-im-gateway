@@ -1,65 +1,74 @@
 package config
 
 import (
+	"context"
+	"errors"
 	"fmt"
+	"reflect"
 	"sync/atomic"
-	"time"
 
 	lib "github.com/ruandao/distribute-im-gateway/src/lib"
-	"github.com/ruandao/distribute-im-gateway/src/traffic"
-	"go.etcd.io/etcd/clientv3"
 )
 
+var depList = []string{
+	"auth",
+}
+
 type Config struct {
-	CometAddr     string
-	AuthAddr      string
-	TrafficConfig traffic.Config
+	lib.BConfig
+	AppConfig
 }
 
 var configVal atomic.Value
-var configCh chan Config
 
-func init() {
-	configCh = make(chan Config)
-	writeAppConf(Config{})
-
-	go func() {
-		for {
-			conf := <-configCh
-			writeAppConf(conf)
-		}
-	}()
+func readConf() *Config {
+	if conf := configVal.Load(); conf != nil {
+		return conf.(*Config)
+	}
+	return nil
 }
 
-func readAppConf() Config {
-	return configVal.Load().(Config)
+func writeAppConf(appConf AppConfig) lib.XError {
+	sortDepList(appConf.DepServices)
+	if !reflect.DeepEqual(appConf.DepServices, depList) {
+		err := errors.New(
+			"AppConf.DepServices error: \n" +
+				fmt.Sprintf("The list should be %v \n", depList) +
+				fmt.Sprintf("But get %v", appConf.DepServices),
+		)
+		return lib.NewXError(err, "")
+	}
+
+	conf := readConf()
+	if conf == nil {
+		conf = &Config{}
+	}
+	conf.AppConfig = appConf
+	configVal.Store(conf)
+	return nil
 }
-func writeAppConf(conf Config) {
+func writeBConf(bConf lib.BConfig) {
+	conf := readConf()
+	if conf == nil {
+		conf = &Config{}
+	}
+	conf.BConfig = bConf
 	configVal.Store(conf)
 }
 
-func Load() (Config, lib.XError) {
-
+func Load(ctx context.Context) (*Config, lib.XError) {
 	bConfig, xerr := lib.LoadBasicConfig()
 	if xerr != nil {
-		return readAppConf(), xerr
+		return nil, xerr
+	}
+	writeBConf(bConfig)
+
+	_appConf, xerr := readAppConfig(ctx, bConfig)
+	if xerr != nil {
+		return nil, xerr
 	}
 
-	cli, err := clientv3.New(clientv3.Config{
-		Endpoints:   []string{bConfig.EtcdConfigCenter},
-		DialTimeout: 5 * time.Second,
-	})
-	if err != nil {
-		return readAppConf(), lib.NewXError(err, "Connect Etcd Failed")
-	}
-	defer cli.Close()
+	writeAppConf(*_appConf)
 
-	var config = Config{}
-	keyPath := fmt.Sprintf("/service/%v/%v/config", bConfig.BusinessName, bConfig.Version)
-	if xerr := lib.LoadAppConfig(keyPath, &config); xerr != nil {
-		return config, xerr
-	}
-	writeAppConf(config)
-
-	return readAppConf(), nil
+	return readConf(), xerr
 }

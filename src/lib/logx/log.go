@@ -5,6 +5,9 @@ import (
 	"os"
 )
 
+func Info(msg ...interface{}) {
+	fmt.Print(msg...)
+}
 func Infof(format string, others ...interface{}) {
 	fmt.Printf(format, others...)
 }
