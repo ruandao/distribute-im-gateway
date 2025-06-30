@@ -10,12 +10,8 @@ import (
 	lib "github.com/ruandao/distribute-im-gateway/pkg/lib"
 )
 
-var depList = []string{
-	"auth",
-}
-
 type Config struct {
-	lib.BConfig
+	BConfig
 	AppConfig
 }
 
@@ -42,6 +38,7 @@ func readConf() *Config {
 
 func writeAppConf(appConf AppConfig) lib.XError {
 	sortDepList(appConf.DepServices)
+	depList := depListVal.Load().([]string)
 	if !reflect.DeepEqual(appConf.DepServices, depList) {
 		err := errors.New(
 			"AppConf.DepServices error: \n" +
@@ -59,7 +56,7 @@ func writeAppConf(appConf AppConfig) lib.XError {
 	configVal.Store(conf)
 	return nil
 }
-func writeBConf(bConf lib.BConfig) {
+func writeBConf(bConf BConfig) {
 	conf := readConf()
 	if conf == nil {
 		conf = &Config{}
@@ -69,7 +66,7 @@ func writeBConf(bConf lib.BConfig) {
 }
 
 func Load(ctx context.Context) (*Config, lib.XError) {
-	bConfig, xerr := lib.LoadBasicConfig()
+	bConfig, xerr := LoadBasicConfig()
 	if xerr != nil {
 		return nil, xerr
 	}

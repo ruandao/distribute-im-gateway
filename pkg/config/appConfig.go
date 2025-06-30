@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	lib "github.com/ruandao/distribute-im-gateway/pkg/lib"
@@ -18,22 +20,28 @@ type AppConfig struct {
 }
 
 var appConfCh chan AppConfig
+var once sync.Once
+var depListVal atomic.Value
 
-func init() {
-	sortDepList(depList)
+func RegisterDepList(depList []string) {
+	depListVal.Store(depList)
+	once.Do(func() {
+		depList := depListVal.Load().([]string)
+		sortDepList(depList)
 
-	appConfCh = make(chan AppConfig)
-	writeAppConf(AppConfig{})
+		appConfCh = make(chan AppConfig)
+		writeAppConf(AppConfig{})
 
-	go func() {
-		for {
-			appConf := <-appConfCh
-			writeAppConf(appConf)
-		}
-	}()
+		go func() {
+			for {
+				appConf := <-appConfCh
+				writeAppConf(appConf)
+			}
+		}()
+	})
 }
 
-func readAppConfig(ctx context.Context, bConfig lib.BConfig) (*AppConfig, lib.XError) {
+func readAppConfig(ctx context.Context, bConfig BConfig) (*AppConfig, lib.XError) {
 	cli, err := etcdLib.New(etcdLib.Config{
 		Endpoints:   bConfig.EtcdConfigCenter,
 		DialTimeout: 5 * time.Second,
@@ -57,7 +65,7 @@ func readAppConfig(ctx context.Context, bConfig lib.BConfig) (*AppConfig, lib.XE
 		value := kv.Value
 
 		var _appConfig AppConfig
-		if xerr := lib.ReadInto(value, &_appConfig); xerr != nil {
+		if xerr := ReadInto(value, &_appConfig); xerr != nil {
 			logx.Errorf("%v App配置有误: %v", bConfig.LoadAppId(), xerr)
 			continue
 		}

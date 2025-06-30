@@ -1,10 +1,11 @@
-package lib
+package config
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
 
+	"github.com/ruandao/distribute-im-gateway/pkg/lib"
 	"github.com/spf13/viper"
 )
 
@@ -32,14 +33,14 @@ func (bConf BConfig) LoadAppId() string {
 	return fmt.Sprintf("%v-%v", bConf.BusinessName, bConf.Version)
 }
 
-func LoadBasicConfig() (BConfig, XError) {
+func LoadBasicConfig() (BConfig, lib.XError) {
 	config := BConfig{}
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 
 	if err := viper.ReadInConfig(); err != nil {
-		return config, NewXError(err, "load config.yaml fail")
+		return config, lib.NewXError(err, "load config.yaml fail")
 	}
 
 	// 优先使用环境变量（需设置环境变量前缀）
@@ -47,26 +48,26 @@ func LoadBasicConfig() (BConfig, XError) {
 	viper.SetEnvPrefix("APP") // 环境变量需以APP_开头，如APP_DATABASE_URL
 
 	if err := viper.Unmarshal(&config); err != nil {
-		return config, NewXError(err, "config.yaml parse fail....")
+		return config, lib.NewXError(err, "config.yaml parse fail....")
 	}
 
 	return config, nil
 }
 
-func ReadInto(dataBytes []byte, store any) XError {
+func ReadInto(dataBytes []byte, store any) lib.XError {
 	v := viper.New()
 	v.SetConfigType("json")
 
 	// 从字节数组读取配置
 	if err := v.ReadConfig(bytes.NewBuffer(dataBytes)); err != nil {
-		return NewXError(err, "读取配置失败")
+		return lib.NewXError(err, "读取配置失败")
 	}
 
 	// 初始化配置结构体
 
 	// 将配置解析到结构体
 	if err := v.Unmarshal(&store); err != nil {
-		return NewXError(err, "解析配置失败")
+		return lib.NewXError(err, "解析配置失败")
 	}
 	return nil
 }
