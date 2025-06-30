@@ -35,7 +35,7 @@ func init() {
 
 func readAppConfig(ctx context.Context, bConfig lib.BConfig) (*AppConfig, lib.XError) {
 	cli, err := etcdLib.New(etcdLib.Config{
-		Endpoints:   []string{bConfig.EtcdConfigCenter},
+		Endpoints:   bConfig.EtcdConfigCenter,
 		DialTimeout: 5 * time.Second,
 	})
 	if err != nil {
@@ -43,9 +43,8 @@ func readAppConfig(ctx context.Context, bConfig lib.BConfig) (*AppConfig, lib.XE
 	}
 	defer cli.Close()
 
-	keyPath := fmt.Sprintf("/service/%v/%v/config", bConfig.BusinessName, bConfig.Version)
-	bKeyPath := []byte(keyPath)
-	gResp, err := cli.Get(ctx, keyPath)
+	bKeyPath := []byte(bConfig.AppConfPath())
+	gResp, err := cli.Get(ctx, bConfig.AppConfPath())
 	if err != nil {
 		return nil, lib.NewXError(err, fmt.Sprintf("Get %v Config Data Fail", bConfig.LoadAppId()))
 	}

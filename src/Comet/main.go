@@ -13,18 +13,19 @@ import (
 )
 
 func runHttpSer(wg *sync.WaitGroup) {
-	ctx, _ := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancelf := context.WithTimeout(context.Background(), time.Second)
+	defer cancelf()
+
 	config, xerr := config.Load(ctx)
 	if xerr != nil {
 		logx.Fatal(xerr)
 	}
 
-	fmt.Printf("config: %v\n", config)
 	handler.Register()
 
-	logx.Infof("Start http server on: %v\n", config.BConfig.RegisterAddr())
+	logx.Infof("start %v:\nlistenAddr: %v \nregisterAddr: %v\n", config.BConfig.LoadAppId(), config.BConfig.ListenAddr(), config.BConfig.RegisterAddr())
 	if err := http.ListenAndServe(config.BConfig.ListenAddr(), http.DefaultServeMux); err != nil {
-		fmt.Printf("Comet run: %v\n", err)
+		fmt.Printf("Comet run err: %v\n", err)
 		wg.Done()
 	}
 }

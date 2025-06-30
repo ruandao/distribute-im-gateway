@@ -19,6 +19,18 @@ type Config struct {
 	AppConfig
 }
 
+func (conf *Config) AppStatePaths() []string {
+	var paths []string
+	for _, tag := range conf.TrafficTags {
+		// /service/${BusinessName}/ready/${tag}/${ip:port}
+		keyPath1 := fmt.Sprintf("/AppState/service/%v/%v/%v/%v", conf.BusinessName, conf.Version, tag, conf.RegisterAddr())
+		// /service/${tag}/${BusinessName}:${version}/${ip:port}
+		keyPath2 := fmt.Sprintf("/AppState/traffic/%v/%v/%v", tag, conf.LoadAppId(), conf.RegisterAddr())
+		paths = append(paths, keyPath1, keyPath2)
+	}
+	return paths
+}
+
 var configVal atomic.Value
 
 func readConf() *Config {
@@ -69,6 +81,7 @@ func Load(ctx context.Context) (*Config, lib.XError) {
 	}
 
 	writeAppConf(*_appConf)
+	close(confReadyCh)
 
 	return readConf(), xerr
 }

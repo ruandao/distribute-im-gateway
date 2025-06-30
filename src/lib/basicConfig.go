@@ -2,19 +2,25 @@ package lib
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/viper"
 )
 
 type BConfig struct {
-	IP               string `mapstructure:"ip"`
-	Port             string `mapstructure:"port"`
-	EtcdConfigCenter string `mapstructure:"etcd-config-center"`
-	BusinessName     string `mapstructure:"business-name"`
-	Version          string `mapstructure:"version"`
+	BusinessName     string   `mapstructure:"business-name"`
+	Version          string   `mapstructure:"version"`
+	IP               string   `mapstructure:"ip"`
+	Port             string   `mapstructure:"port"`
+	EtcdConfigCenter []string `mapstructure:"etcd-config-center"`
+	Lease            int64    `mapstructure:"lease-time-seconds"`
 }
 
+func (bConfig BConfig) AppConfPath() string {
+	keyPath := fmt.Sprintf("/service/%v/%v/config", bConfig.BusinessName, bConfig.Version)
+	return keyPath
+}
 func (bConf BConfig) ListenAddr() string {
 	return fmt.Sprintf("127.0.0.1:%v", bConf.Port)
 }
@@ -23,7 +29,7 @@ func (bConf BConfig) RegisterAddr() string {
 }
 
 func (bConf BConfig) LoadAppId() string {
-	return fmt.Sprintf("%v:%v", bConf.BusinessName, bConf.Version)
+	return fmt.Sprintf("%v-%v", bConf.BusinessName, bConf.Version)
 }
 
 func LoadBasicConfig() (BConfig, XError) {
@@ -65,6 +71,7 @@ func ReadInto(dataBytes []byte, store any) XError {
 	return nil
 }
 
-func UpdateAppState(keyPrefix string, state map[string]interface{}) {
-
+func WriteIntoJSONIndent(val any) string {
+	jsonData, _ := json.MarshalIndent(val, "", " ")
+	return string(jsonData)
 }

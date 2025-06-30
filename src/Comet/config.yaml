@@ -1,4 +1,7 @@
-port: 8080
-etcd-config-center: http://localhost:2379
 business-name: Comet
 version: v0.0.1
+ip: 192.168.1.1
+port: 8080
+etcd-config-center: 
+  - http://localhost:2379
+lease-time-seconds: 10
