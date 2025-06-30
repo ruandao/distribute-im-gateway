@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
+	logx "github.com/ruandao/distribute-im-gateway/pkg/lib/logx"
 	config "github.com/ruandao/distribute-im-gateway/src/Comet/Config"
 	handler "github.com/ruandao/distribute-im-gateway/src/Comet/Handler"
-	logx "github.com/ruandao/distribute-im-gateway/src/lib/logx"
 )
 
 func runHttpSer(wg *sync.WaitGroup) {

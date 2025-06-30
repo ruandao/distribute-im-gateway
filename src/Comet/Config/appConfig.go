@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"time"
 
-	lib "github.com/ruandao/distribute-im-gateway/src/lib"
-	"github.com/ruandao/distribute-im-gateway/src/lib/logx"
+	lib "github.com/ruandao/distribute-im-gateway/pkg/lib"
+	"github.com/ruandao/distribute-im-gateway/pkg/lib/logx"
 	etcdLib "go.etcd.io/etcd/client/v3"
 )
 

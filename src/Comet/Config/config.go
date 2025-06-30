@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"sync/atomic"
 
-	lib "github.com/ruandao/distribute-im-gateway/src/lib"
+	lib "github.com/ruandao/distribute-im-gateway/pkg/lib"
 )
 
 var depList = []string{
