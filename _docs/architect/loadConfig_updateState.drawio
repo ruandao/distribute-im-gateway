@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="pjNIeP8AtsBLkjPyPWQF" name="Page-1">
-        <mxGraphModel dx="1732" dy="379" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="1431" dy="309" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -34,7 +34,7 @@
                 <mxCell id="16" value="" style="edgeStyle=none;html=1;" parent="1" source="13" target="15" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="48" style="edgeStyle=none;html=1;" edge="1" parent="1" source="13" target="47">
+                <mxCell id="48" style="edgeStyle=none;html=1;" parent="1" source="13" target="47" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="13" value="连接到配置节点，&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;根据业务服务名称和版本号去读取配置&lt;/span&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;rounded=1;" parent="1" vertex="1">
@@ -80,10 +80,10 @@
                 <mxCell id="22" value="&lt;div style=&quot;color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); font-family: Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px; white-space: pre;&quot;&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;DepServices: 依赖的服务列表,数组&lt;/span&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="19" vertex="1">
                     <mxGeometry y="60" width="240" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="24" value="&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;/traffic/service/${BusinessName}/ready/${tag}/${ip:port}&lt;/span&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                <mxCell id="24" value="&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;/AppState/traffic/${tag}/${BusinessName}/${ip:port}&lt;/span&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="-400" y="770" width="310" height="120" as="geometry"/>
                 </mxCell>
-                <mxCell id="46" value="version: ${version} 放置版本号" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="24">
+                <mxCell id="46" value="version: ${version} 放置版本号" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="24" vertex="1">
                     <mxGeometry y="30" width="310" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="25" value="connectCnt: 连接数" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="24" vertex="1">
@@ -106,20 +106,20 @@
                 <mxCell id="30" value="运行过程中不断同步节点状态到配置中心" style="whiteSpace=wrap;html=1;rounded=1;" parent="1" vertex="1">
                     <mxGeometry x="110" y="765" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="38" value="&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;/traffic/service/${tag}/${BusinessName}/${ip:port}&lt;/span&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-413" y="570" width="310" height="120" as="geometry"/>
+                <mxCell id="38" value="&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;/AppState/service/${BusinessName}/${Version}/${tag}/${ip:port}&lt;/span&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-490" y="570" width="387" height="120" as="geometry"/>
                 </mxCell>
                 <mxCell id="39" value="version: ${version} 放置版本号" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="38" vertex="1">
-                    <mxGeometry y="30" width="310" height="30" as="geometry"/>
+                    <mxGeometry y="30" width="387" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="44" value="connectCnt: 连接数" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="38">
-                    <mxGeometry y="60" width="310" height="30" as="geometry"/>
+                <mxCell id="44" value="connectCnt: 连接数" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="38" vertex="1">
+                    <mxGeometry y="60" width="387" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="45" value="roomCnt: 房间数" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="38">
-                    <mxGeometry y="90" width="310" height="30" as="geometry"/>
+                <mxCell id="45" value="roomCnt: 房间数" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="38" vertex="1">
+                    <mxGeometry y="90" width="387" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="47" value="同步 /traffic/service/${tag} 到本地" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="294" y="490" width="256" height="60" as="geometry"/>
+                <mxCell id="47" value="同步路由配置到本地&lt;div&gt;应用多的话，可以仅同步依赖服务&lt;br&gt;应用不多的话，则全量同步&lt;br&gt;------------------------------&lt;/div&gt;&lt;div&gt;同步&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;/AppState/traffic&lt;/span&gt;/ 到本地&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="294" y="490" width="256" height="100" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
