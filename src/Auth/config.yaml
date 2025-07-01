@@ -1,0 +1,7 @@
+business-name: Auth
+version: v0.0.1
+ip: 0.0.0.0
+port: 7070
+etcd-config-center: 
+  - http://localhost:2379
+lease-time-seconds: 10

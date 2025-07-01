@@ -28,8 +28,11 @@ export -f convert_pb_to_service
 # 遍历当前目录下的所有 .drawio 文件
 for d in `ls src`;do
     cd src/$d
+    echo "process src/$d"
     rm -rf service/gen
-    find . -name "*.proto" -print0 | xargs -0 -P 4 -I {} bash -c 'convert_pb_to_service "$0"' {}
+    # find -L . -name "*.proto" | xargs -I {} echo {}
+    find -L . -name "*.proto" -print0 | xargs -0 -P 4 -I {} bash -c 'convert_pb_to_service "$0"' {}
+    echo "process done src/$d"
     cd ../../
 done
 
