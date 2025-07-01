@@ -6,6 +6,7 @@ import (
 
 type TID [16]byte
 type TIDKey string
+type TrafficEndPoints []string
 
 func NewTrafficID() TID {
 	var buf TID

@@ -3,7 +3,8 @@ module github.com/ruandao/distribute-im-gateway/pkg/config
 go 1.24.3
 
 require (
-	github.com/ruandao/distribute-im-gateway/pkg/lib v0.0.0-00010101000000-000000000000
+	github.com/ruandao/distribute-im-gateway/pkg/lib v1.1.1
+	github.com/ruandao/distribute-im-gateway/pkg/traffic v1.1.1
 	github.com/spf13/viper v1.20.1
 	go.etcd.io/etcd/client/v3 v3.6.1
 )
@@ -31,10 +32,10 @@ require (
 	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20250303144028-a0af3efb3deb // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250303144028-a0af3efb3deb // indirect
-	google.golang.org/grpc v1.71.1 // indirect
-	google.golang.org/protobuf v1.36.5 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250324211829-b45e905df463 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250324211829-b45e905df463 // indirect
+	google.golang.org/grpc v1.73.0 // indirect
+	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 

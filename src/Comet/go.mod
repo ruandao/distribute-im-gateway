@@ -3,8 +3,9 @@ module github.com/ruandao/distribute-im-gateway/src/Comet
 go 1.24.3
 
 require (
-	github.com/ruandao/distribute-im-gateway/pkg/config v0.0.0-00010101000000-000000000000
+	github.com/ruandao/distribute-im-gateway/pkg/config v1.1.1
 	github.com/ruandao/distribute-im-gateway/pkg/lib v1.1.1
+	github.com/ruandao/distribute-im-gateway/pkg/traffic v1.1.1
 	google.golang.org/grpc v1.73.0
 	google.golang.org/protobuf v1.36.6
 )
@@ -39,6 +40,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
+// replace github.com/ruandao/distribute-im-gateway/pkg => ../../pkg // 重定向到本地路径
 replace github.com/ruandao/distribute-im-gateway/pkg/traffic => ../../pkg/traffic // 重定向到本地路径
 
 replace github.com/ruandao/distribute-im-gateway/pkg/lib => ../../pkg/lib // 重定向到本地路径

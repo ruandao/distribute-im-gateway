@@ -1,20 +1,24 @@
 package handler
 
-import "net/http"
+import (
+	"context"
+	"net/http"
+)
 
-type HandF func(w http.ResponseWriter, r *http.Request) (runNext bool)
+type HandF func(ctx context.Context, w http.ResponseWriter, r *http.Request) (nCtx context.Context, runNext bool)
 
-var handlerF = func(w http.ResponseWriter, r *http.Request) bool {
+var handlerF = func(ctx context.Context, w http.ResponseWriter, r *http.Request) (nCtx context.Context, runNext bool) {
 	defer r.Body.Close()
 	w.Write([]byte("hello world!!!"))
-	return false
+	return ctx, false
 }
 
 func h(fArr ...HandF) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		ctx := r.Context()
+		runNext := true
 		for _, fun := range fArr {
-			runNext := fun(w, r)
+			ctx, runNext = fun(ctx, w, r)
 			if !runNext {
 				break
 			}
@@ -23,5 +27,5 @@ func h(fArr ...HandF) http.HandlerFunc {
 }
 
 func Register() {
-	http.HandleFunc("/comet", h(authHandler, handlerF))
+	http.HandleFunc("/comet", h(trafficTagHandler, authHandler, handlerF))
 }

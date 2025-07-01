@@ -3,7 +3,7 @@ syntax = "proto3";
 option go_package = "./pb_auth";
 
 
-service Auth {
+service AuthService {
     rpc Check(Request) returns (Response) {}
 }
 

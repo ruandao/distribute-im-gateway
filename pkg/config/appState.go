@@ -21,6 +21,8 @@ func NewAppState(appState IAppState) atomic.Value {
 
 	go func() {
 		<-confReadyCh
+		config := readConf()
+		go watchRoute(context.Background(), config)
 		for {
 			xerr := registerState(appStateVal)
 			var nilXerr lib.XError = nil

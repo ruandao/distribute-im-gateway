@@ -3,32 +3,39 @@ package traffic
 import (
 	"context"
 	"fmt"
-	"net/http"
 
-	"github.com/ruandao/distribute-im-gateway/src/lib"
+	"github.com/ruandao/distribute-im-gateway/pkg/lib"
 	"google.golang.org/grpc"
 )
 
-type Config struct {
+type TrafficConfig struct {
 	TrafficIdKey TIDKey
-	Addr         string
+	EndPoints    TrafficEndPoints
 }
 
-func NewTrafficConfig(tidKey string, addr string) {
-
+func NewConfig(tidKey string, TrafficEndPoints TrafficEndPoints) TrafficConfig {
+	trafficConfig := TrafficConfig{TrafficIdKey: TIDKey(tidKey), EndPoints: TrafficEndPoints}
+	return trafficConfig
 }
 
-func NewContext(config Config, r *http.Request) context.Context {
-	rCtx := r.Context()
-	tid := rCtx.Value(config.TrafficIdKey)
+func NewContext(trafficConfig TrafficConfig, ctx context.Context) context.Context {
+	key := trafficConfig.TrafficIdKey
+	if key == "" {
+		key = "trafficIdKey"
+	}
+
+	tid := ctx.Value(key)
 	if tid == nil {
 		tid = NewTrafficID()
-		rCtx = context.WithValue(rCtx, config.TrafficIdKey, tid)
+		ctx = context.WithValue(ctx, trafficConfig.TrafficIdKey, tid)
 	}
-	return rCtx
+	return ctx
 }
 
-func GetRPCClient(authAddr string, context context.Context) (*grpc.ClientConn, lib.XError) {
-	conn, err := grpc.NewClient(authAddr)
-	return conn, lib.NewXError(err, fmt.Sprintf("get client for %v fail: %v", authAddr, err))
+func GetRPCClient(trafficConfig TrafficConfig, context context.Context) (*grpc.ClientConn, lib.XError) {
+	for _, endPoint := range trafficConfig.EndPoints {
+		conn, err := grpc.NewClient(endPoint)
+		return conn, lib.NewXError(err, fmt.Sprintf("get client for %v fail: %v", endPoint, err))
+	}
+	return nil, lib.NewXError(fmt.Errorf("not endpoint found"), "")
 }

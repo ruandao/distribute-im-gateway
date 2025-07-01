@@ -20,12 +20,26 @@ func (conf *Config) AppStatePaths() []string {
 	for _, tag := range conf.TrafficTags {
 		// /service/${BusinessName}/ready/${tag}/${ip:port}
 		keyPath1 := fmt.Sprintf("/AppState/service/%v/%v/%v/%v", conf.BusinessName, conf.Version, tag, conf.RegisterAddr())
-		// /service/${tag}/${BusinessName}:${version}/${ip:port}
-		keyPath2 := fmt.Sprintf("/AppState/traffic/%v/%v/%v", tag, conf.LoadAppId(), conf.RegisterAddr())
+		// /service/${tag}/${BusinessName}/${ip:port}
+		// the client don't know which is the version of target business
+		// it only know the businessName and TrafficTag
+		keyPath2 := fmt.Sprintf("/AppState/traffic/%v/%v/%v", tag, conf.BusinessName, conf.RegisterAddr())
 		paths = append(paths, keyPath1, keyPath2)
 	}
 	return paths
 }
+
+func (conf *Config) AppTrafficPrefix(tag string) string {
+	return fmt.Sprintf("/AppState/traffic/%v", tag)
+}
+
+// func (conf *Config) GetTrafficRouteForBusiness(trafficTag string, businessName string) {
+// 	for _, tag := range conf.TrafficTags {
+// 		if tag == trafficTag {
+
+// 		}
+// 	}
+// }
 
 var configVal atomic.Value
 
