@@ -33,26 +33,34 @@ func init() {
 		logx.Info("config ready")
 		for {
 			event := <-kvChangeEventCh
-
+			hasChange := false
 			route := TrafficRouteVal.Load().(map[string]string)
 			switch event.Type {
 			case TrafficRouteEventTypePut:
 				for _, kv := range event.KVs {
+
 					key := string(kv.Key)
 					value := string(kv.Value)
-					logx.Infof("[update] route %v:%v\n", key, value)
-					route[key] = value
+					preVal := route[key]
+					if value != preVal {
+						route[key] = value
+						logx.Infof("[update] route %v:%v\n", key, value)
+						hasChange = true
+					}
 				}
 			case TrafficRouteEventTypeDelete:
 				for _, kv := range event.KVs {
 					key := string(kv.Key)
 					delete(route, key)
 					logx.Infof("[del] route %v\n", key)
+					hasChange = true
 				}
 			}
-			logx.Infof("route: %v\n", WriteIntoJSONIndent(route))
-			logx.Infof("event: %v\n", event)
-			TrafficRouteVal.Store(route)
+			if hasChange {
+				logx.Infof("route: %v\n", WriteIntoJSONIndent(route))
+				logx.Infof("event: %v\n", event)
+				TrafficRouteVal.Store(route)
+			}
 		}
 
 	}()
@@ -67,18 +75,17 @@ func watchRoute(ctx context.Context, config *Config) lib.XError {
 		return lib.NewXError(err, "Connect Etcd Failed")
 	}
 
+	keyPrefix := config.AppTrafficPrefix("")
 	go func() {
-		keyPrefix := config.AppTrafficPrefix("")
-		ReadAllInto(ctx, cli, keyPrefix, kvChangeEventCh)
 		logx.Infof("watch route %v\n", keyPrefix)
-		ch := cli.Watch(ctx, keyPrefix)
+		ch := cli.Watch(ctx, keyPrefix, etcdLib.WithPrefix())
 		for {
 			kvChange, ok := <-ch
 			if !ok {
 				break
 			}
 			for _, event := range kvChange.Events {
-				logx.Infof("get watch event: %v type %v\n", event.Kv.Key, event.Type)
+				// logx.Infof("get watch event: %v type %v\n", event.Kv.Key, event.Type)
 				eventType := NewTrafficRouteEventTypeFrom(event.Type)
 				newEvent := NewTrafficRouteEvent(eventType, nil)
 				newEvent.KVs = append(newEvent.KVs, event.Kv)
@@ -87,6 +94,8 @@ func watchRoute(ctx context.Context, config *Config) lib.XError {
 		}
 		logx.Infof("watch route end %v\n", keyPrefix)
 	}()
+
+	ReadAllInto(ctx, cli, keyPrefix, kvChangeEventCh)
 	return nil
 }
 

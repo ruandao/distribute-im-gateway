@@ -4,8 +4,8 @@ go 1.24.3
 
 require (
 	github.com/ruandao/distribute-im-gateway/pkg/lib v1.1.1
-	github.com/ruandao/distribute-im-gateway/pkg/traffic v1.1.1
 	github.com/spf13/viper v1.20.1
+	go.etcd.io/etcd/api/v3 v3.6.1
 	go.etcd.io/etcd/client/v3 v3.6.1
 )
 
@@ -25,7 +25,6 @@ require (
 	github.com/spf13/cast v1.7.1 // indirect
 	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
-	go.etcd.io/etcd/api/v3 v3.6.1 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.6.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect

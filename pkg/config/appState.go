@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"fmt"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -19,12 +20,12 @@ type IAppState interface {
 func NewAppState(appState IAppState) atomic.Value {
 	var appStateVal atomic.Value
 	appStateVal.Store(appState)
-
+	waitFirstSyncCh := make(chan struct{})
+	waitFirstSyncChOnce := sync.Once{}
 	go func() {
 		logx.Info("NewAppState")
 		<-confreadych.Ch
-		config := readConf()
-		go watchRoute(context.Background(), config)
+
 		var xerr lib.XError
 		defer func() {
 			logx.Infof("[Sync:False] err: %v\n", xerr)
@@ -36,11 +37,20 @@ func NewAppState(appState IAppState) atomic.Value {
 			if xerr != lib.NilXerr {
 				return
 			}
+			waitFirstSyncChOnce.Do(func() {
+				close(waitFirstSyncCh)
+			})
 
 			conf := readConf()
 			time.Sleep(time.Second * time.Duration(conf.Lease) / 3)
 		}
 	}()
+	logx.Info("appState register wait")
+	<-waitFirstSyncCh
+	logx.Info("appState register done")
+	config := readConf()
+	watchRoute(context.Background(), config)
+	logx.Info("route watch done")
 	return appStateVal
 }
 
