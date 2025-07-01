@@ -6,6 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	confreadych "github.com/ruandao/distribute-im-gateway/pkg/config/confReadyCh"
 	lib "github.com/ruandao/distribute-im-gateway/pkg/lib"
 	"github.com/ruandao/distribute-im-gateway/pkg/lib/logx"
 	etcdLib "go.etcd.io/etcd/client/v3"
@@ -20,13 +21,21 @@ func NewAppState(appState IAppState) atomic.Value {
 	appStateVal.Store(appState)
 
 	go func() {
-		<-confReadyCh
+		logx.Info("NewAppState")
+		<-confreadych.Ch
 		config := readConf()
 		go watchRoute(context.Background(), config)
+		var xerr lib.XError
+		defer func() {
+			logx.Infof("[Sync:False] err: %v\n", xerr)
+		}()
+
+		logx.Infof("[Sync:True] err: %v\n", xerr)
 		for {
-			xerr := registerState(appStateVal)
-			var nilXerr lib.XError = nil
-			logx.Infof("[Sync:%v] err: %v\n", xerr == nilXerr, xerr)
+			xerr = registerState(appStateVal)
+			if xerr != lib.NilXerr {
+				return
+			}
 
 			conf := readConf()
 			time.Sleep(time.Second * time.Duration(conf.Lease) / 3)
@@ -64,6 +73,7 @@ func registerState(appStateVal atomic.Value) lib.XError {
 			xerr := lib.NewXError(err, fmt.Sprintf("set key %s fail: %v", key, err))
 			return xerr
 		}
+		// logx.Infof("register key: %v val: %v", key, stateVal)
 	}
 	return nil
 }

@@ -10,10 +10,6 @@ var depList = []string{
 	"auth",
 }
 
-func initDepList() {
-	xConfLib.RegisterDepList(depList)
-}
-
 type CometState struct {
 	ConnectCnt int `json:"connectCnt"`
 	RoomCnt    int `json:"roomCnt"`

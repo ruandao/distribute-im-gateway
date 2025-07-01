@@ -10,6 +10,8 @@ type Error struct {
 	e error
 }
 
+var NilXerr XError = nil
+
 type XError interface {
 	XError() Error
 	Error() string

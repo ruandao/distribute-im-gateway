@@ -27,5 +27,7 @@ func h(fArr ...HandF) http.HandlerFunc {
 }
 
 func Register() {
-	http.HandleFunc("/comet", h(trafficTagHandler, authHandler, handlerF))
+	http.HandleFunc("/comet", h(
+		// trafficTagHandler,
+		authHandler, handlerF))
 }

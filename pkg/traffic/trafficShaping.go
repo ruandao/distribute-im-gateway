@@ -6,6 +6,7 @@ import (
 
 	"github.com/ruandao/distribute-im-gateway/pkg/lib"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type TrafficConfig struct {
@@ -32,10 +33,18 @@ func NewContext(trafficConfig TrafficConfig, ctx context.Context) context.Contex
 	return ctx
 }
 
-func GetRPCClient(trafficConfig TrafficConfig, context context.Context) (*grpc.ClientConn, lib.XError) {
+func GetRPCClient(ctx context.Context, businessNode string) (*grpc.ClientConn, lib.XError) {
+	reqTag := ctx.Value("TrafficTag")
+	if reqTag == nil {
+		reqTag = "default"
+	}
+	authEndPoints := ReadRouteEndPoints(reqTag, businessNode)
+	trafficConfig := NewConfig("", authEndPoints)
+	// ctx = NewContext(trafficConfig, ctx)
 	for _, endPoint := range trafficConfig.EndPoints {
-		conn, err := grpc.NewClient(endPoint)
+		dialOption := grpc.WithTransportCredentials(insecure.NewCredentials())
+		conn, err := grpc.NewClient(endPoint, dialOption)
 		return conn, lib.NewXError(err, fmt.Sprintf("get client for %v fail: %v", endPoint, err))
 	}
-	return nil, lib.NewXError(fmt.Errorf("not endpoint found"), "")
+	return nil, lib.NewXError(fmt.Errorf("not endpoint found for %v of %v node", businessNode, reqTag), "")
 }

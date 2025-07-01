@@ -8,7 +8,9 @@ import (
 	"time"
 
 	logx "github.com/ruandao/distribute-im-gateway/pkg/lib/logx"
+	"github.com/ruandao/distribute-im-gateway/pkg/traffic"
 
+	xConfLib "github.com/ruandao/distribute-im-gateway/pkg/config"
 	handler "github.com/ruandao/distribute-im-gateway/src/Comet/Handler"
 	"github.com/ruandao/distribute-im-gateway/src/Comet/config"
 )
@@ -33,6 +35,7 @@ func runHttpSer(wg *sync.WaitGroup) {
 
 func main() {
 	var wg sync.WaitGroup
+	traffic.RegisterRouteVal(xConfLib.TrafficRouteVal)
 
 	wg.Add(1)
 	go runHttpSer(&wg)

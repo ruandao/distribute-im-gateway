@@ -8,6 +8,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	sortdeplist "github.com/ruandao/distribute-im-gateway/pkg/config/util/sortDepList"
 	lib "github.com/ruandao/distribute-im-gateway/pkg/lib"
 	"github.com/ruandao/distribute-im-gateway/pkg/lib/logx"
 	etcdLib "go.etcd.io/etcd/client/v3"
@@ -25,9 +26,10 @@ var depListVal atomic.Value
 
 func RegisterDepList(depList []string) {
 	depListVal.Store(depList)
+	fmt.Printf("depList: %v load: %v", depList, depListVal.Load())
 	once.Do(func() {
 		depList := depListVal.Load().([]string)
-		sortDepList(depList)
+		sortdeplist.Sort(depList)
 
 		appConfCh = make(chan AppConfig)
 		writeAppConf(AppConfig{})
@@ -65,7 +67,7 @@ func readAppConfig(ctx context.Context, bConfig BConfig) (*AppConfig, lib.XError
 		value := kv.Value
 
 		var _appConfig AppConfig
-		if xerr := ReadInto(value, &_appConfig); xerr != nil {
+		if xerr := ReadFromJSON(value, &_appConfig); xerr != nil {
 			logx.Errorf("%v App配置有误: %v", bConfig.LoadAppId(), xerr)
 			continue
 		}

@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	xConfLib "github.com/ruandao/distribute-im-gateway/pkg/config"
 	"github.com/ruandao/distribute-im-gateway/pkg/lib/logx"
 	configLib "github.com/ruandao/distribute-im-gateway/src/Comet/config"
 	"github.com/ruandao/distribute-im-gateway/src/Comet/service/gen/pb_auth"
@@ -20,12 +19,7 @@ var authHandler = func(ctx context.Context, w http.ResponseWriter, r *http.Reque
 	// defer conn.Close()
 	// buf.WriteString("hi websocket conn")
 	// buf.Flush()
-
-	reqTag := ctx.Value("TrafficTag")
-	authEndPoints := xConfLib.ReadRouteEndPoints(reqTag, configLib.CONST_AUTH_Business)
-	trafficConfig := traffic.NewConfig("", authEndPoints)
-	ctx = traffic.NewContext(trafficConfig, ctx)
-	conn, xerr := traffic.GetRPCClient(trafficConfig, ctx)
+	conn, xerr := traffic.GetRPCClient(ctx, configLib.CONST_BUSINESS_AUTH)
 	if xerr != nil {
 		logx.Errorf("%v", xerr)
 		return ctx, false

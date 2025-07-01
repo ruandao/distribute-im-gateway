@@ -2,77 +2,57 @@ package config
 
 import (
 	"context"
-	"fmt"
-	"strings"
 	"sync/atomic"
 	"time"
 
+	confreadych "github.com/ruandao/distribute-im-gateway/pkg/config/confReadyCh"
 	lib "github.com/ruandao/distribute-im-gateway/pkg/lib"
 	"github.com/ruandao/distribute-im-gateway/pkg/lib/logx"
-	"github.com/ruandao/distribute-im-gateway/pkg/traffic"
 	etcdLib "go.etcd.io/etcd/client/v3"
 )
 
+var kvChangeEventCh chan *TrafficRouteEvent
+var TrafficRouteVal *atomic.Value
+
+func RegisterRouteEventCh(ch chan *TrafficRouteEvent) {
+	kvChangeEventCh = ch
+}
+
 // key: /service/${tag}/${BusinessName}/${ip:port}
-// val: appState
-type TrafficRoute map[string]string
-
-var trafficRouteVal atomic.Value
-var kvChangeEventCh chan etcdLib.Event
-
-func readEndpointsFrom(route map[string]string, prefix string) traffic.TrafficEndPoints {
-	var endPoints []string
-	for key := range route {
-		if strings.HasPrefix(key, prefix) {
-			ipport, found := strings.CutPrefix(key, prefix)
-			if found {
-				endPoints = append(endPoints, ipport)
-			}
-		}
-	}
-	return endPoints
-}
-
-func ReadRouteEndPoints(tag any, business string) traffic.TrafficEndPoints {
-	if tag == "" {
-		tag = "default"
-	}
-	route := trafficRouteVal.Load().(TrafficRoute)
-	targetKeyPrefix := fmt.Sprintf("/service/%v/%v/", tag, business)
-	endPoints := readEndpointsFrom(route, targetKeyPrefix)
-
-	// the business don't have tag Node
-	// then we will traffic to default Node
-	if len(endPoints) == 0 && tag != "default" {
-		targetKeyPrefix := fmt.Sprintf("/service/%v/%v/", "default", business)
-		endPoints = readEndpointsFrom(route, targetKeyPrefix)
-	}
-	return endPoints
-}
+// trafficRoute
 
 func init() {
-	kvChangeEventCh = make(chan etcdLib.Event)
-	trafficRoute := make(TrafficRoute)
-	trafficRouteVal.Store(trafficRoute)
+	TrafficRouteVal = &atomic.Value{}
+	kvChangeEventCh = make(chan *TrafficRouteEvent)
+	trafficRoute := make(map[string]string)
+	TrafficRouteVal.Store(trafficRoute)
 
 	go func() {
-		<-confReadyCh
+
+		<-confreadych.Ch
+		logx.Info("config ready")
 		for {
 			event := <-kvChangeEventCh
-			route := trafficRouteVal.Load().(map[string]string)
-			kv := event.Kv
-			key := string(kv.Key)
-			value := string(kv.Value)
 
-			logx.Infof("traffic change:\n%v:%v\n", key, value)
-
+			route := TrafficRouteVal.Load().(map[string]string)
 			switch event.Type {
-			case etcdLib.EventTypePut:
-				route[key] = value
-			case etcdLib.EventTypeDelete:
-				delete(route, key)
+			case TrafficRouteEventTypePut:
+				for _, kv := range event.KVs {
+					key := string(kv.Key)
+					value := string(kv.Value)
+					logx.Infof("[update] route %v:%v\n", key, value)
+					route[key] = value
+				}
+			case TrafficRouteEventTypeDelete:
+				for _, kv := range event.KVs {
+					key := string(kv.Key)
+					delete(route, key)
+					logx.Infof("[del] route %v\n", key)
+				}
 			}
-			trafficRouteVal.Store(route)
+			logx.Infof("route: %v\n", WriteIntoJSONIndent(route))
+			logx.Infof("event: %v\n", event)
+			TrafficRouteVal.Store(route)
 		}
 
 	}()
@@ -88,13 +68,35 @@ func watchRoute(ctx context.Context, config *Config) lib.XError {
 	}
 
 	go func() {
-		ch := cli.Watch(ctx, config.AppTrafficPrefix(""))
+		keyPrefix := config.AppTrafficPrefix("")
+		ReadAllInto(ctx, cli, keyPrefix, kvChangeEventCh)
+		logx.Infof("watch route %v\n", keyPrefix)
+		ch := cli.Watch(ctx, keyPrefix)
 		for {
-			kvChange := <-ch
+			kvChange, ok := <-ch
+			if !ok {
+				break
+			}
 			for _, event := range kvChange.Events {
-				kvChangeEventCh <- *event
+				logx.Infof("get watch event: %v type %v\n", event.Kv.Key, event.Type)
+				eventType := NewTrafficRouteEventTypeFrom(event.Type)
+				newEvent := NewTrafficRouteEvent(eventType, nil)
+				newEvent.KVs = append(newEvent.KVs, event.Kv)
+				kvChangeEventCh <- newEvent
 			}
 		}
+		logx.Infof("watch route end %v\n", keyPrefix)
 	}()
+	return nil
+}
+
+func ReadAllInto(ctx context.Context, cli *etcdLib.Client, keyPrefix string, ch chan *TrafficRouteEvent) lib.XError {
+	gResp, err := cli.Get(ctx, keyPrefix, etcdLib.WithPrefix())
+	if err != nil {
+		return lib.NewXError(err, "Read etcd config fail")
+	}
+	logx.Infof("ReadAllInto key: %v ->  %v\n", keyPrefix, gResp.Kvs)
+	event := NewTrafficRouteEvent(TrafficRouteEventTypePut, gResp.Kvs)
+	ch <- event
 	return nil
 }

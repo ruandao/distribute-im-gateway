@@ -11,9 +11,9 @@ import (
 var initOnce sync.Once
 
 func Load(ctx context.Context) (*xConfLib.Config, lib.XError) {
+	conf, err := xConfLib.LoadConfig(ctx, depList)
 	initOnce.Do(func() {
-		initDepList()
 		initAppState()
 	})
-	return xConfLib.Load(ctx)
+	return conf, err
 }

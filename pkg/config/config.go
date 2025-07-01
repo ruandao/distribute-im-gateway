@@ -7,6 +7,8 @@ import (
 	"reflect"
 	"sync/atomic"
 
+	confreadych "github.com/ruandao/distribute-im-gateway/pkg/config/confReadyCh"
+	sortdeplist "github.com/ruandao/distribute-im-gateway/pkg/config/util/sortDepList"
 	lib "github.com/ruandao/distribute-im-gateway/pkg/lib"
 )
 
@@ -51,7 +53,7 @@ func readConf() *Config {
 }
 
 func writeAppConf(appConf AppConfig) lib.XError {
-	sortDepList(appConf.DepServices)
+	sortdeplist.Sort(appConf.DepServices)
 	depList := depListVal.Load().([]string)
 	if !reflect.DeepEqual(appConf.DepServices, depList) {
 		err := errors.New(
@@ -79,7 +81,9 @@ func writeBConf(bConf BConfig) {
 	configVal.Store(conf)
 }
 
-func Load(ctx context.Context) (*Config, lib.XError) {
+func LoadConfig(ctx context.Context, depList []string) (*Config, lib.XError) {
+	RegisterDepList(depList)
+
 	bConfig, xerr := LoadBasicConfig()
 	if xerr != nil {
 		return nil, xerr
@@ -92,7 +96,7 @@ func Load(ctx context.Context) (*Config, lib.XError) {
 	}
 
 	writeAppConf(*_appConf)
-	close(confReadyCh)
+	close(confreadych.Ch)
 
 	return readConf(), xerr
 }
