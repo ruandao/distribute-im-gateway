@@ -1,6 +1,15 @@
-version: '3.5'
 
 services:
+  redis-test:
+    image: redis:7.2-alpine  # 使用官方 Redis 镜像
+    container_name: redis-test
+    ports:
+      - "6379:6379"  # 映射 Redis 默认端口
+    volumes:
+      - ./data/redis/volumes:/data  # 持久化存储数据
+    command: redis-server --appendonly yes  # 启用 AOF 持久化
+    restart: always  # 容器自动重启
+
   mysql-test:
     image: registry.cn-hangzhou.aliyuncs.com/bigdata_cloudnative/mysql-test:5.7
     restart: always
@@ -25,6 +34,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 3
+
 
   etcdService:
     image: bitnami/etcd:3.6.1
@@ -78,7 +88,8 @@ services:
     networks:
       - default
 
-
+volumes:
+  redis-data:  # 定义数据卷
 
 networks:
   app_network:
