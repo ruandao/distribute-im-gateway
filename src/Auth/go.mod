@@ -10,6 +10,7 @@ replace github.com/ruandao/distribute-im-gateway/pkg/lib => ../../pkg/lib // 重
 replace github.com/ruandao/distribute-im-gateway/pkg/config => ../../pkg/config // 重定向到本地路径
 
 require (
+	github.com/bwmarrin/snowflake v0.3.0
 	github.com/ruandao/distribute-im-gateway/pkg/config v0.0.0-00010101000000-000000000000
 	github.com/ruandao/distribute-im-gateway/pkg/lib v1.1.1
 	github.com/ruandao/distribute-im-gateway/pkg/traffic v0.0.0-00010101000000-000000000000
@@ -21,9 +22,12 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coreos/go-semver v0.3.1 // indirect
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
+	github.com/go-redis/redis/v8 v8.11.5 // indirect
 	github.com/go-sql-driver/mysql v1.9.3 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect

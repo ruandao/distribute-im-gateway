@@ -21,11 +21,19 @@ type DBConfig struct {
 	DBName   string `mapstruct:"dbName"`
 }
 
+type RedisConfig struct {
+	Addr     string `mapstruct:"addr"`     // Redis服务器地址
+	Password string `mapstruct:"password"` // 密码（默认为空）
+	DB       int    `mapstruct:"db"`       // 数据库编号
+	PoolSize int    `mapstruct:"poolSize"` // 连接池大小
+}
+
 type AppConfig struct {
 	TrafficTags []string `mapstructure:"trafficTags"`
 	// 为什么需要从配置中读取？程序是知道自己依赖哪些服务的，但是编排程序的人不知道，所以需要强制二者一致，这样部署维护就更容易
-	DepServices []string `mapstructure:"depServices"`
-	DBConfig    DBConfig `mapstructure:"db"`
+	DepServices []string    `mapstructure:"depServices"`
+	DBConfig    DBConfig    `mapstructure:"dbConfig"`
+	RedisConfig RedisConfig `mapstructure:"redisConfig"`
 }
 
 var appConfCh chan AppConfig

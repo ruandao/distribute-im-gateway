@@ -31,6 +31,10 @@ func main() {
 	if err := lib.RegisterDBConfig(dbConfig.Addr, dbConfig.User, dbConfig.Password, dbConfig.DBName); err != nil {
 		logx.Fatal(err)
 	}
+	rConfig := config.AppConfig.RedisConfig
+	if err := lib.RegisterRedisC(rConfig.Addr, rConfig.Password, rConfig.DB, rConfig.PoolSize); err != nil {
+		logx.Fatal(err)
+	}
 
 	var wg sync.WaitGroup
 	traffic.RegisterRouteVal(xConfLib.TrafficRouteVal)

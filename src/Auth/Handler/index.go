@@ -31,5 +31,14 @@ func Register() {
 		middleware.LogReqHandler,
 		registerUser,
 	))
+	http.HandleFunc("/login", h(
+		middleware.LogReqHandler,
+		loginUser,
+	))
+
+	http.HandleFunc("/queryUser", h(
+		middleware.LogReqHandler,
+		queryUser,
+	))
 	http.HandleFunc("/helloword", h(helloworldHandlerF))
 }

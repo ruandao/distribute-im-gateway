@@ -1,2 +1,2 @@
 /service/comet/v1.0.0/config={"TrafficTags":["default"],"DepServices":["auth"]}
-/service/auth/v1.0.0/config={"TrafficTags":["default"],"DepServices":[""], "db": {"user": "authCli", "password": "authCliXXX", "addr":"localhost:3306", "dbName": "wechat"}}
+/service/auth/v1.0.0/config={"TrafficTags":["default"],"DepServices":[""], "dbConfig": {"user": "authCli", "password": "authCliXXX", "addr":"localhost:3306", "dbName": "wechat"}, "redisConfig": {"addr": "localhost:6379", "password": "", "db": 0, "poolSize": 100}}

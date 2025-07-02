@@ -9,7 +9,7 @@ import (
 type User struct {
 	gorm.Model
 	UserName         string
-	UserPasswordHash string
+	UserPasswordHash string `json:"-"`
 }
 
 func NewUser(userName string, userPassword string) (*User, error) {
