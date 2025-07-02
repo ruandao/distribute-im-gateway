@@ -12,7 +12,7 @@ import (
 )
 
 // 认证中间件
-var AuthHandler = func(ctx context.Context, w http.ResponseWriter, r *http.Request) (nCtx context.Context, runNext bool) {
+var AuthHandler HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request) (nCtx context.Context, runNext bool) {
 	defer r.Body.Close()
 	// hj, _ := w.(http.Hijacker)
 	// conn, buf, _ := hj.Hijack()

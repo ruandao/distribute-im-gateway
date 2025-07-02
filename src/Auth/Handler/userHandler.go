@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/ruandao/distribute-im-gateway/pkg/lib"
+	"github.com/ruandao/distribute-im-gateway/src/Auth/middleware"
 	"github.com/ruandao/distribute-im-gateway/src/Auth/model"
 )
 
@@ -15,7 +16,7 @@ type UserDTO struct {
 	UserPassword string `json:"password"`
 }
 
-var registerUser HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request) (nCtx context.Context, runNext bool) {
+var registerUser middleware.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request) (nCtx context.Context, runNext bool) {
 	defer r.Body.Close()
 	bodyData, err := io.ReadAll(r.Body)
 	if err != nil {

@@ -10,21 +10,23 @@ import (
 type DBConfig struct {
 	User     string
 	Password string
-	Host     string
-	Port     string
+	Addr     string
 	DBName   string
 }
 
 func (dbConfig DBConfig) getDSN() string {
 	// dsn := "user:password@tcp(127.0.0.1:3306)/test_db?charset=utf8mb4&parseTime=True&loc=Local"
 
-	return fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8mb4&parseTime=True&loc=Local", dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.DBName)
+	return fmt.Sprintf("%v:%v@tcp(%v)/%v?charset=utf8mb4&parseTime=True&loc=Local", dbConfig.User, dbConfig.Password, dbConfig.Addr, dbConfig.DBName)
 }
 
 var dbConfig DBConfig
 
-func RegisterDBConfig(user string, password string, dbName string) {
-	dbConfig = DBConfig{User: user, Password: password, DBName: dbName}
+func RegisterDBConfig(addr string, user string, password string, dbName string) error {
+	dbConfig = DBConfig{Addr: addr, User: user, Password: password, DBName: dbName}
+	// fmt.Printf("mysql dsn: %v", dbConfig.getDSN())
+	_, err := GetDB()
+	return err
 }
 
 func GetDB() (*gorm.DB, error) {

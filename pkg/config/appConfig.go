@@ -14,10 +14,18 @@ import (
 	etcdLib "go.etcd.io/etcd/client/v3"
 )
 
+type DBConfig struct {
+	User     string `mapstruct:"user"`
+	Password string `mapstruct:"password"`
+	Addr     string `mapstruct:"addr"`
+	DBName   string `mapstruct:"dbName"`
+}
+
 type AppConfig struct {
 	TrafficTags []string `mapstructure:"trafficTags"`
 	// 为什么需要从配置中读取？程序是知道自己依赖哪些服务的，但是编排程序的人不知道，所以需要强制二者一致，这样部署维护就更容易
 	DepServices []string `mapstructure:"depServices"`
+	DBConfig    DBConfig `mapstructure:"db"`
 }
 
 var appConfCh chan AppConfig

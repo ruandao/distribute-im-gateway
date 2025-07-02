@@ -6,10 +6,9 @@ import (
 	"net/http"
 	"strings"
 	"sync"
-	"time"
 
+	xConfLib "github.com/ruandao/distribute-im-gateway/pkg/config"
 	logx "github.com/ruandao/distribute-im-gateway/pkg/lib/logx"
-	"github.com/ruandao/distribute-im-gateway/src/Auth/config"
 	"github.com/ruandao/distribute-im-gateway/src/Auth/service/gen/pb_auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -27,14 +26,7 @@ func (s *AuthService) Check(ctx context.Context, req *pb_auth.Request) (*pb_auth
 	}, nil
 }
 
-func runSer(wg *sync.WaitGroup, mux *http.ServeMux) {
-	ctx, cancelf := context.WithTimeout(context.Background(), time.Second)
-	defer cancelf()
-
-	config, xerr := config.Load(ctx)
-	if xerr != nil {
-		logx.Fatal(xerr)
-	}
+func runSer(wg *sync.WaitGroup, mux *http.ServeMux, config *xConfLib.Config) {
 
 	authService := AuthService{}
 

@@ -44,7 +44,10 @@ func GetRPCClient(ctx context.Context, businessNode string) (*grpc.ClientConn, e
 	for _, endPoint := range trafficConfig.EndPoints {
 		dialOption := grpc.WithTransportCredentials(insecure.NewCredentials())
 		conn, err := grpc.NewClient(endPoint, dialOption)
-		return conn, lib.NewXError(err, fmt.Sprintf("get client for %v fail: %v", endPoint, err))
+		if err != nil {
+			return nil, lib.NewXError(err, fmt.Sprintf("get client for %v fail: %v", endPoint, err))
+		}
+		return conn, nil
 	}
 	return nil, lib.NewXError(fmt.Errorf("not endpoint found for %v of %v node", businessNode, reqTag), "")
 }
