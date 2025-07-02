@@ -13,8 +13,14 @@ else
     echo "目录 $directory 不存在。"
 fi
 
+# 删除对应容器
+docker rm -f mysql-test
+
 # 创建目录
 # 创建目录
 echo "创建目录 $directory ..."
 mkdir -p "$directory"
-echo "目录 $directory 创建成功。"    
+echo "目录 $directory 创建成功。"
+
+
+docker compose up -d mysql-test
