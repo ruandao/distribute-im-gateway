@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/ruandao/distribute-im-gateway/pkg/lib/logx"
+	middlewareLib "github.com/ruandao/distribute-im-gateway/pkg/middlewareLib"
 	configLib "github.com/ruandao/distribute-im-gateway/src/Auth/config"
 	"github.com/ruandao/distribute-im-gateway/src/Auth/service/gen/pb_auth"
 
@@ -12,7 +13,7 @@ import (
 )
 
 // 认证中间件
-var AuthHandler HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request) (nCtx context.Context, runNext bool) {
+var AuthHandler middlewareLib.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request, nextF middlewareLib.NextF) {
 	defer r.Body.Close()
 	// hj, _ := w.(http.Hijacker)
 	// conn, buf, _ := hj.Hijack()
@@ -22,7 +23,7 @@ var AuthHandler HandF = func(ctx context.Context, w http.ResponseWriter, r *http
 	conn, xerr := traffic.GetRPCClient(ctx, configLib.CONST_BUSINESS_AUTH)
 	if xerr != nil {
 		logx.Errorf("%v", xerr)
-		return ctx, false
+		return
 	}
 
 	authRequest := &pb_auth.Request{}
@@ -30,7 +31,9 @@ var AuthHandler HandF = func(ctx context.Context, w http.ResponseWriter, r *http
 	res, err := client.Check(ctx, authRequest)
 	if err != nil {
 		w.Write([]byte("not auth"))
-		return ctx, false
+		return
 	}
-	return ctx, res.Result.Result
+	if res.Result.Result {
+		nextF(ctx, w, r)
+	}
 }

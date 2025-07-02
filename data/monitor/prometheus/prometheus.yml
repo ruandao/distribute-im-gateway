@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus-test:9090']
+
+  - job_name: 'go_auth'
+    static_configs:
+      - targets: ['host.docker.internal:8800', 'host.docker.internal:8801']
+
+
+  - job_name: 'go_comet'
+    static_configs:
+      - targets: ['host.docker.internal:8900', 'host.docker.internal:8901']      

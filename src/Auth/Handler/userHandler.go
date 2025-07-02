@@ -11,7 +11,8 @@ import (
 	"github.com/ruandao/distribute-im-gateway/pkg/config"
 	"github.com/ruandao/distribute-im-gateway/pkg/lib"
 	"github.com/ruandao/distribute-im-gateway/pkg/lib/logx"
-	"github.com/ruandao/distribute-im-gateway/src/Auth/middleware"
+	middlewareLib "github.com/ruandao/distribute-im-gateway/pkg/middlewareLib"
+
 	"github.com/ruandao/distribute-im-gateway/src/Auth/model"
 
 	"github.com/bwmarrin/snowflake"
@@ -22,68 +23,104 @@ type UserDTO struct {
 	UserPassword string `json:"password"`
 }
 
-var registerUser middleware.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request) (nCtx context.Context, runNext bool) {
+var registerUser middlewareLib.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request, nextF middlewareLib.NextF) {
 	defer r.Body.Close()
 	bodyData, err := io.ReadAll(r.Body)
 	if err != nil {
 		w.Write([]byte("body error"))
-		return ctx, false
+		return
 	}
 
 	userDTO := &UserDTO{}
 	if err := json.Unmarshal(bodyData, userDTO); err != nil {
 		w.Write([]byte("body parse error"))
-		return ctx, false
+		return
 	}
 
 	user, err := model.NewUser(userDTO.UserName, userDTO.UserPassword)
 	if err != nil {
 		w.Write([]byte("password generate fail"))
-		return ctx, false
+		return
 	}
 	db, err := lib.GetDB()
 	if err != nil {
 		w.Write([]byte("Connect DB Failed"))
-		return ctx, false
+		return
 	}
 	result := db.Create(user)
 	if result.Error != nil {
 		w.Write([]byte("Update data to db failed!"))
-		return ctx, false
+		return
 	}
 	w.Write([]byte("create user success"))
-	return ctx, false
+	return
 }
 
-var loginUser middleware.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request) (nCtx context.Context, runNext bool) {
+var batchCreateUser middlewareLib.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request, nextF middlewareLib.NextF) {
+	defer r.Body.Close()
+
+	db, err := lib.GetDB()
+	if err != nil {
+		w.Write([]byte("connect db failed"))
+		return
+	}
+	// 计算总记录数
+	var count int64
+	result := db.Model(&model.User{}).Count(&count)
+	if result.Error != nil {
+		w.Write([]byte("failed to count records"))
+		return
+	}
+
+	startTime := time.Now()
+
+	var cnt int64 = 0
+	for cnt < 10000 {
+		cnt += 100
+
+		userName := fmt.Sprintf("user_%v", count+cnt)
+		user, _ := model.NewUser(userName, userName)
+		result := db.Create(user)
+		if result.Error != nil {
+			w.Write([]byte(fmt.Sprintf("create user %v fail", userName)))
+			return
+		}
+	}
+	endTime := time.Now()
+	duration := endTime.Sub(startTime)
+	w.Write([]byte(fmt.Sprintf("cost time %v seconds to create %v users\n", duration/time.Second, cnt)))
+	return
+}
+
+var loginUser middlewareLib.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request, nextF middlewareLib.NextF) {
 	defer r.Body.Close()
 
 	bodyData, err := io.ReadAll(r.Body)
 	if err != nil {
 		w.Write([]byte("body error"))
-		return ctx, false
+		return
 	}
 
 	userDTO := &UserDTO{}
 	if err := json.Unmarshal(bodyData, userDTO); err != nil {
 		w.Write([]byte("body parse error"))
-		return ctx, false
+		return
 	}
 
 	db, err := lib.GetDB()
 	if err != nil {
 		w.Write([]byte("Connect DB Failed"))
-		return ctx, false
+		return
 	}
 	user := &model.User{UserName: userDTO.UserName}
 	result := db.First(&user)
 	if result.Error != nil {
 		w.Write([]byte("user name or password error!"))
-		return ctx, false
+		return
 	}
 	if !user.ValidatePassword(userDTO.UserPassword) {
 		w.Write([]byte("user name or password error!"))
-		return ctx, false
+		return
 	}
 
 	// 创建节点，参数为机器ID，范围0-1023
@@ -106,7 +143,7 @@ var loginUser middleware.HandF = func(ctx context.Context, w http.ResponseWriter
 	statusCmd := redisCli.Set(ctx, fmt.Sprintf("c_%v", cookieID), config.WriteIntoJSONIndent(user), time.Hour*24)
 	if statusCmd.Err() != nil {
 		logx.Errorf("设置Cookie失败 %v\n", statusCmd.Err())
-		return ctx, false
+		return
 	}
 
 	// 创建一个新的Cookie
@@ -121,10 +158,10 @@ var loginUser middleware.HandF = func(ctx context.Context, w http.ResponseWriter
 	// 将Cookie添加到响应头
 	http.SetCookie(w, cookie)
 	w.Write([]byte("user login success"))
-	return ctx, false
+	return
 }
 
-var queryUser middleware.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request) (nCtx context.Context, runNext bool) {
+var queryUser middlewareLib.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request, nextF middlewareLib.NextF) {
 	defer r.Body.Close()
 	// 将 cookieID 写到redis
 	redisCli := lib.GetRedisClient()
@@ -132,12 +169,12 @@ var queryUser middleware.HandF = func(ctx context.Context, w http.ResponseWriter
 	cookie, err := r.Cookie("cookieID")
 	if err != nil {
 		logx.Infof("get cookie fail: %v\n", err)
-		return ctx, false
+		return
 	}
 	statusCmd := redisCli.Get(ctx, fmt.Sprintf("c_%v", cookie.Value))
 	if statusCmd.Err() != nil {
 		logx.Infof("query user fail %v", statusCmd.Err())
-		return ctx, false
+		return
 	}
 	val := statusCmd.Val()
 	logx.Infof("redisData: %v\n", val)
@@ -145,8 +182,8 @@ var queryUser middleware.HandF = func(ctx context.Context, w http.ResponseWriter
 	err = config.ReadFromJSON([]byte(val), user)
 	if err != nil {
 		logx.Infof("query user fail %v\n", err)
-		return ctx, false
+		return
 	}
 	w.Write([]byte(val))
-	return ctx, false
+	return
 }

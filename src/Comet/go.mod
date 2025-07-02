@@ -5,6 +5,7 @@ go 1.24.3
 require (
 	github.com/ruandao/distribute-im-gateway/pkg/config v1.1.1
 	github.com/ruandao/distribute-im-gateway/pkg/lib v1.1.1
+	github.com/ruandao/distribute-im-gateway/pkg/middlewareLib v0.0.0-00010101000000-000000000000
 	github.com/ruandao/distribute-im-gateway/pkg/traffic v1.1.1
 	google.golang.org/grpc v1.73.0
 	google.golang.org/protobuf v1.36.6
@@ -12,6 +13,7 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coreos/go-semver v0.3.1 // indirect
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
@@ -25,8 +27,13 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/prometheus/client_golang v1.22.0 // indirect
+	github.com/prometheus/client_model v0.6.1 // indirect
+	github.com/prometheus/common v0.62.0 // indirect
+	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/sagikazarmark/locafero v0.7.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.12.0 // indirect
@@ -55,3 +62,5 @@ replace github.com/ruandao/distribute-im-gateway/pkg/traffic => ../../pkg/traffi
 replace github.com/ruandao/distribute-im-gateway/pkg/lib => ../../pkg/lib // 重定向到本地路径
 
 replace github.com/ruandao/distribute-im-gateway/pkg/config => ../../pkg/config // 重定向到本地路径
+
+replace github.com/ruandao/distribute-im-gateway/pkg/middlewareLib => ../../pkg/middlewareLib // 重定向到本地路径

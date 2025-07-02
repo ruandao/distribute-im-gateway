@@ -3,31 +3,18 @@ package handler
 import (
 	"context"
 	"net/http"
+
+	middlewareLib "github.com/ruandao/distribute-im-gateway/pkg/middlewareLib"
 )
 
-type HandF func(ctx context.Context, w http.ResponseWriter, r *http.Request) (nCtx context.Context, runNext bool)
-
-var handlerF = func(ctx context.Context, w http.ResponseWriter, r *http.Request) (nCtx context.Context, runNext bool) {
+var handlerF middlewareLib.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request, nextF middlewareLib.NextF) {
 	defer r.Body.Close()
 	w.Write([]byte("hello world!!!"))
-	return ctx, false
-}
-
-func h(fArr ...HandF) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-		runNext := true
-		for _, fun := range fArr {
-			ctx, runNext = fun(ctx, w, r)
-			if !runNext {
-				break
-			}
-		}
-	}
 }
 
 func Register() {
-	http.HandleFunc("/comet", h(
-		// trafficTagHandler,
+	http.HandleFunc("/comet", middlewareLib.H(
+		middlewareLib.LogReqHandler,
+		middlewareLib.MetricsMiddleware,
 		authHandler, handlerF))
 }

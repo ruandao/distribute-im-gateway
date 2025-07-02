@@ -4,46 +4,45 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/ruandao/distribute-im-gateway/src/Auth/middleware"
+	middlewareLib "github.com/ruandao/distribute-im-gateway/pkg/middlewareLib"
 )
 
-var helloworldHandlerF = func(ctx context.Context, w http.ResponseWriter, r *http.Request) (nCtx context.Context, runNext bool) {
+var helloworldHandlerF middlewareLib.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request, nextF middlewareLib.NextF) {
 	defer r.Body.Close()
 	w.Write([]byte("hello world!!!"))
-	return ctx, false
-}
-
-func h(fArr ...middleware.HandF) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-		runNext := true
-		for _, fun := range fArr {
-			ctx, runNext = fun(ctx, w, r)
-			if !runNext {
-				break
-			}
-		}
-	}
 }
 
 func Register() {
-	http.HandleFunc("/register", h(
-		middleware.LogReqHandler,
+	http.HandleFunc("/register", middlewareLib.H(
+		middlewareLib.LogReqHandler,
+		middlewareLib.MetricsMiddleware,
 		registerUser,
 	))
-	http.HandleFunc("/login", h(
-		middleware.LogReqHandler,
+	http.HandleFunc("/batchCreateUser", middlewareLib.H(
+		middlewareLib.LogReqHandler,
+		middlewareLib.MetricsMiddleware,
+		batchCreateUser,
+	))
+	http.HandleFunc("/login", middlewareLib.H(
+		middlewareLib.LogReqHandler,
+		middlewareLib.MetricsMiddleware,
 		loginUser,
 	))
 
-	http.HandleFunc("/queryUser", h(
-		middleware.LogReqHandler,
+	http.HandleFunc("/queryUser", middlewareLib.H(
+		middlewareLib.LogReqHandler,
+		middlewareLib.MetricsMiddleware,
 		queryUser,
 	))
 
-	http.HandleFunc("/cometAddr", h(
-		middleware.LogReqHandler,
+	http.HandleFunc("/cometAddr", middlewareLib.H(
+		middlewareLib.LogReqHandler,
+		middlewareLib.MetricsMiddleware,
 		cometAddrHandler,
 	))
-	http.HandleFunc("/helloword", h(helloworldHandlerF))
+	http.HandleFunc("/helloword", middlewareLib.H(
+		middlewareLib.LogReqHandler,
+		middlewareLib.MetricsMiddleware,
+		helloworldHandlerF,
+	))
 }
