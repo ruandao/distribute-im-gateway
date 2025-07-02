@@ -66,7 +66,7 @@ func init() {
 	}()
 }
 
-func watchRoute(ctx context.Context, config *Config) lib.XError {
+func watchRoute(ctx context.Context, config *Config) error {
 	cli, err := etcdLib.New(etcdLib.Config{
 		Endpoints:   config.EtcdConfigCenter,
 		DialTimeout: 5 * time.Second,
@@ -99,7 +99,7 @@ func watchRoute(ctx context.Context, config *Config) lib.XError {
 	return nil
 }
 
-func ReadAllInto(ctx context.Context, cli *etcdLib.Client, keyPrefix string, ch chan *TrafficRouteEvent) lib.XError {
+func ReadAllInto(ctx context.Context, cli *etcdLib.Client, keyPrefix string, ch chan *TrafficRouteEvent) error {
 	gResp, err := cli.Get(ctx, keyPrefix, etcdLib.WithPrefix())
 	if err != nil {
 		return lib.NewXError(err, "Read etcd config fail")

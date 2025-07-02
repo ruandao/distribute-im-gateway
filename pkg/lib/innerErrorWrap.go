@@ -10,9 +10,9 @@ type Error struct {
 	e error
 }
 
-var NilXerr XError = nil
+var NilXerr zError = nil
 
-type XError interface {
+type zError interface {
 	XError() Error
 	Error() string
 }
@@ -30,8 +30,8 @@ func (xerr *Error) String() string {
 	return fmt.Sprintf("%+v", xerr.e)
 }
 
-func NewXError(err error, msg string) XError {
-	xerr, ok := err.(XError)
+func NewXError(err error, msg string) error {
+	xerr, ok := err.(zError)
 	if !ok {
 		// new XError
 		_err := errors.Wrap(err, "\n"+msg)

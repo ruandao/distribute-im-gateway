@@ -1,44 +1,26 @@
 package main
 
 import (
-	"context"
-	"fmt"
 	"net/http"
 	"sync"
-	"time"
 
-	logx "github.com/ruandao/distribute-im-gateway/pkg/lib/logx"
 	"github.com/ruandao/distribute-im-gateway/pkg/traffic"
+	handler "github.com/ruandao/distribute-im-gateway/src/Comet/Handler"
 
 	xConfLib "github.com/ruandao/distribute-im-gateway/pkg/config"
-	handler "github.com/ruandao/distribute-im-gateway/src/Comet/Handler"
-	"github.com/ruandao/distribute-im-gateway/src/Comet/config"
 )
 
-func runHttpSer(wg *sync.WaitGroup) {
-	ctx, cancelf := context.WithTimeout(context.Background(), time.Second)
-	defer cancelf()
-
-	config, xerr := config.Load(ctx)
-	if xerr != nil {
-		logx.Fatal(xerr)
-	}
-
+func init() {
 	handler.Register()
-
-	logx.Infof("start %v:\nlistenAddr: %v \nregisterAddr: %v\n", config.BConfig.LoadAppId(), config.BConfig.ListenAddr(), config.BConfig.RegisterAddr())
-	if err := http.ListenAndServe(config.BConfig.ListenAddr(), http.DefaultServeMux); err != nil {
-		fmt.Printf("Comet run err: %v\n", err)
-		wg.Done()
-	}
 }
 
 func main() {
 	var wg sync.WaitGroup
 	traffic.RegisterRouteVal(xConfLib.TrafficRouteVal)
 
-	wg.Add(1)
-	go runHttpSer(&wg)
+	wg.Add(2)
+
+	go runSer(&wg, http.DefaultServeMux)
 
 	wg.Wait()
 }

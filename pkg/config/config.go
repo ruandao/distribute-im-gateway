@@ -22,7 +22,6 @@ func (conf *Config) AppStatePaths() []string {
 	for _, tag := range conf.TrafficTags {
 		// /service/${BusinessName}/ready/${tag}/${ip:port}
 		keyPath1 := fmt.Sprintf("/AppState/service/%v/%v/%v/%v", conf.BusinessName, conf.Version, tag, conf.RegisterAddr())
-		// /service/${tag}/${BusinessName}/${ip:port}
 		// the client don't know which is the version of target business
 		// it only know the businessName and TrafficTag
 		keyPath2 := fmt.Sprintf("/AppState/traffic/%v/%v/%v", tag, conf.BusinessName, conf.RegisterAddr())
@@ -52,7 +51,7 @@ func readConf() *Config {
 	return nil
 }
 
-func writeAppConf(appConf AppConfig) lib.XError {
+func writeAppConf(appConf AppConfig) error {
 	sortdeplist.Sort(appConf.DepServices)
 	depList := depListVal.Load().([]string)
 	if !reflect.DeepEqual(appConf.DepServices, depList) {
@@ -81,7 +80,7 @@ func writeBConf(bConf BConfig) {
 	configVal.Store(conf)
 }
 
-func LoadConfig(ctx context.Context, depList []string) (*Config, lib.XError) {
+func LoadConfig(ctx context.Context, depList []string) (*Config, error) {
 	RegisterDepList(depList)
 
 	bConfig, xerr := LoadBasicConfig()
@@ -96,7 +95,7 @@ func LoadConfig(ctx context.Context, depList []string) (*Config, lib.XError) {
 	}
 
 	writeAppConf(*_appConf)
-	close(confreadych.Ch)
+	confreadych.Close()
 
 	return readConf(), xerr
 }

@@ -31,7 +31,7 @@ func (bConf BConfig) LoadAppId() string {
 	return fmt.Sprintf("%v-%v", bConf.BusinessName, bConf.Version)
 }
 
-func LoadBasicConfig() (BConfig, lib.XError) {
+func LoadBasicConfig() (BConfig, error) {
 	config := BConfig{}
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")

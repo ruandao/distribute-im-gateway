@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func ReadFromJSON(dataBytes []byte, store any) lib.XError {
+func ReadFromJSON(dataBytes []byte, store any) error {
 	v := viper.New()
 	v.SetConfigType("json")
 

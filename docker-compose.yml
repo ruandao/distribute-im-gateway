@@ -1,7 +1,7 @@
 version: '3.5'
 
 services:
-  configServer:
+  etcdService:
     image: bitnami/etcd:3.6.1
     container_name: etcd
     ports:
@@ -11,10 +11,48 @@ services:
       # 允许无认证启动
       - ALLOW_NONE_AUTHENTICATION=yes
       # 向客户端通告的URL
-      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://0.0.0.0:2379
       # 监听客户端连接的地址
       - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379 
     # 添加重启策略
-    restart: always  
+    restart: always
+    # networks:
+    #   - app_network
+    # volumes:
+    #   - ./etcd/data.txt:/data.txt  # 挂载包含键值对的文件
+    # command: >
+    #   sh -c "
+    #     sleep 5 &&
+    #     # 从文件导入所有键值对
+    #     etcdctl --endpoints=http://localhost:2379 put '/service/comet/v1.0.0/config' '{\"TrafficTags\":[\"default\"],\"DepServices\":[\"auth\"]}' &&
+    #     etcdctl --endpoints=http://localhost:2379 put '/service/auth/v1.0.0/config' '{\"TrafficTags\":[\"default\"],\"DepServices\":[\"\"]}' &&
+    #     /opt/bitnami/scripts/etcd/run.sh
+    #   "
 
+  auth:
+    build:
+      context: .
+      dockerfile: ./src/Auth/Dockerfile  # 指定自定义Dockerfile文件名
+    ports:
+      - "8080:8080"
+    depends_on:
+      - etcdService
+    restart: always
+    networks:
+      - default
 
+  comet:
+    build:
+      context: .
+      dockerfile: ./src/Comet/Dockerfile  # 指定自定义Dockerfile文件名
+    ports:
+      - "8181:8181"
+    depends_on:
+      - etcdService
+    restart: always
+    networks:
+      - default
+
+networks:
+  app_network:
+    driver: bridge

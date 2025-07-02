@@ -43,7 +43,7 @@ func RegisterDepList(depList []string) {
 	})
 }
 
-func readAppConfig(ctx context.Context, bConfig BConfig) (*AppConfig, lib.XError) {
+func readAppConfig(ctx context.Context, bConfig BConfig) (*AppConfig, error) {
 	cli, err := etcdLib.New(etcdLib.Config{
 		Endpoints:   bConfig.EtcdConfigCenter,
 		DialTimeout: 5 * time.Second,

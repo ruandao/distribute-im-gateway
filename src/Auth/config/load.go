@@ -5,12 +5,11 @@ import (
 	"sync"
 
 	xConfLib "github.com/ruandao/distribute-im-gateway/pkg/config"
-	"github.com/ruandao/distribute-im-gateway/pkg/lib"
 )
 
 var initOnce sync.Once
 
-func Load(ctx context.Context) (*xConfLib.Config, lib.XError) {
+func Load(ctx context.Context) (*xConfLib.Config, error) {
 	conf, err := xConfLib.LoadConfig(ctx, depList)
 	initOnce.Do(func() {
 		initAppState()

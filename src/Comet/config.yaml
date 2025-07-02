@@ -1,7 +1,7 @@
-business-name: Comet
-version: v0.0.1
+business-name: comet
+version: v1.0.0
 ip: 0.0.0.0
-port: 8080
+port: 8900
 etcd-config-center: 
   - http://localhost:2379
 lease-time-seconds: 10

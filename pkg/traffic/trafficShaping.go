@@ -33,7 +33,7 @@ func NewContext(trafficConfig TrafficConfig, ctx context.Context) context.Contex
 	return ctx
 }
 
-func GetRPCClient(ctx context.Context, businessNode string) (*grpc.ClientConn, lib.XError) {
+func GetRPCClient(ctx context.Context, businessNode string) (*grpc.ClientConn, error) {
 	reqTag := ctx.Value("TrafficTag")
 	if reqTag == nil {
 		reqTag = "default"

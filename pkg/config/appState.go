@@ -26,7 +26,7 @@ func NewAppState(appState IAppState) atomic.Value {
 		logx.Info("NewAppState")
 		<-confreadych.Ch
 
-		var xerr lib.XError
+		var xerr error
 		defer func() {
 			logx.Infof("[Sync:False] err: %v\n", xerr)
 		}()
@@ -54,7 +54,7 @@ func NewAppState(appState IAppState) atomic.Value {
 	return appStateVal
 }
 
-func registerState(appStateVal atomic.Value) lib.XError {
+func registerState(appStateVal atomic.Value) error {
 	ctx := context.Background()
 
 	conf := readConf()
