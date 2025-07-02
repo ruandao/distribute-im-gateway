@@ -1,0 +1,2 @@
+/service/comet/v1.0.0/config={"TrafficTags":["default"],"DepServices":["auth"]}
+/service/auth/v1.0.0/config={"TrafficTags":["default"],"DepServices":[""], "db": {"user": "authCli", "password": "authCliXXX", "addr":"localhost:3306", "dbName": "wechat"}}
