@@ -43,8 +43,8 @@ func LoadBasicConfig() (BConfig, error) {
 
 	// 优先使用环境变量（需设置环境变量前缀）
 	viper.AutomaticEnv()
-	viper.SetEnvPrefix("APP") // 环境变量需以APP_开头，如APP_DATABASE_URL
-	viper.BindEnv("port", "PORT")
+	viper.SetEnvPrefix("APP")     // 环境变量需以APP_开头，如APP_DATABASE_URL
+	viper.BindEnv("port", "PORT") // APP_PORT=8901 go run .  ， 这样就把端口修改为8901
 
 	fmt.Printf("All config keys: %v\n", viper.AllKeys())
 	if err := viper.Unmarshal(&config); err != nil {
