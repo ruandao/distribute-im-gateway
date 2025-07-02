@@ -40,5 +40,10 @@ func Register() {
 		middleware.LogReqHandler,
 		queryUser,
 	))
+
+	http.HandleFunc("/cometAddr", h(
+		middleware.LogReqHandler,
+		cometAddrHandler,
+	))
 	http.HandleFunc("/helloword", h(helloworldHandlerF))
 }

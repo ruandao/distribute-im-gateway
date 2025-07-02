@@ -44,7 +44,9 @@ func LoadBasicConfig() (BConfig, error) {
 	// 优先使用环境变量（需设置环境变量前缀）
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("APP") // 环境变量需以APP_开头，如APP_DATABASE_URL
+	viper.BindEnv("port", "PORT")
 
+	fmt.Printf("All config keys: %v\n", viper.AllKeys())
 	if err := viper.Unmarshal(&config); err != nil {
 		return config, lib.NewXError(err, "config.yaml parse fail....")
 	}

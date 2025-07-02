@@ -62,7 +62,6 @@ func init() {
 				TrafficRouteVal.Store(route)
 			}
 		}
-
 	}()
 }
 
