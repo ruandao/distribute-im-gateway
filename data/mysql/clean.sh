@@ -24,3 +24,6 @@ echo "目录 $directory 创建成功。"
 
 
 docker compose up -d mysql-test
+
+sleep 10
+docker logs mysql-test

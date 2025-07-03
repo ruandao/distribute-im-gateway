@@ -6,8 +6,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"runtime"
+	"sync"
+	"sync/atomic"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/ruandao/distribute-im-gateway/pkg/config"
 	"github.com/ruandao/distribute-im-gateway/pkg/lib"
 	"github.com/ruandao/distribute-im-gateway/pkg/lib/logx"
@@ -37,7 +41,7 @@ var registerUser middlewareLib.HandF = func(ctx context.Context, w http.Response
 		return
 	}
 
-	user, err := model.NewUser(userDTO.UserName, userDTO.UserPassword)
+	user, err := model.NewUser(fmt.Sprintf("%v_%v", userDTO.UserName, lib.GetUuid()), userDTO.UserPassword)
 	if err != nil {
 		w.Write([]byte("password generate fail"))
 		return
@@ -53,10 +57,10 @@ var registerUser middlewareLib.HandF = func(ctx context.Context, w http.Response
 		return
 	}
 	w.Write([]byte("create user success"))
-	return
 }
 
-var batchCreateUser middlewareLib.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request, nextF middlewareLib.NextF) {
+// 单行进行写入, 单机性能 TPS 在 1200/s
+var multipleCreateUser middlewareLib.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request, nextF middlewareLib.NextF) {
 	defer r.Body.Close()
 
 	db, err := lib.GetDB()
@@ -74,24 +78,223 @@ var batchCreateUser middlewareLib.HandF = func(ctx context.Context, w http.Respo
 
 	startTime := time.Now()
 
-	var cnt int64 = 0
-	for cnt < 10000 {
-		cnt += 100
+	cntCh := make(chan int64, 10000)
+	userCh := make(chan *model.User, 100)
+	wgForCnt := &sync.WaitGroup{}
 
-		userName := fmt.Sprintf("user_%v", count+cnt)
-		user, _ := model.NewUser(userName, userName)
-		result := db.Create(user)
-		if result.Error != nil {
-			w.Write([]byte(fmt.Sprintf("create user %v fail", userName)))
-			return
-		}
+	for i := 0; i < runtime.NumCPU()*5; i++ {
+		wgForCnt.Add(1)
+		go func() {
+			for cnt := range cntCh {
+				sTime := time.Now()
+
+				userName := fmt.Sprintf("user_%v", count+cnt)
+				user, _ := model.NewUser(userName, "pwd123")
+
+				nowTime := time.Now()
+				totalDuration := nowTime.Sub(startTime)
+				calPwdDuration := nowTime.Sub(sTime)
+				logx.Infof("create user %v totalDuration %v calPasswordCostTime: %v cntChLen: %v userChLen:%v \n", user.UserName, totalDuration, calPwdDuration, len(cntCh), len(userCh))
+				userCh <- user
+			}
+			wgForCnt.Done()
+		}()
 	}
+	wgForSql := &sync.WaitGroup{}
+
+	for i := 0; i < runtime.NumCPU()*5; i++ {
+		wgForSql.Add(1)
+		go func() {
+			for user := range userCh {
+				sTime := time.Now()
+				result := db.Create(user)
+				if result.Error != nil {
+					w.Write([]byte(fmt.Sprintf("create user %v fail\n", user.UserName)))
+				}
+				nowTime := time.Now()
+				totalDuration := nowTime.Sub(startTime)
+				sqlDuration := nowTime.Sub(sTime)
+				logx.Infof("create user %v totalDuration %v sqlCostTime: %v cntChLen: %v userChLen:%v\n", user.UserName, totalDuration, sqlDuration, len(cntCh), len(userCh))
+			}
+			wgForSql.Done()
+		}()
+	}
+
+	var cnt int64 = 0
+	for cnt < 10000*100 {
+		cnt++
+		cntCh <- cnt
+	}
+
+	close(cntCh)
+	wgForCnt.Wait()
+
+	close(userCh)
+	wgForSql.Wait()
+
 	endTime := time.Now()
 	duration := endTime.Sub(startTime)
-	w.Write([]byte(fmt.Sprintf("cost time %v seconds to create %v users\n", duration/time.Second, cnt)))
-	return
+	w.Write([]byte(fmt.Sprintf("cost time %v seconds to create %v users\n", duration, cnt)))
+	logx.Info("multipleCreateUser")
 }
 
+// 批量进行写入
+var batchCreateUser middlewareLib.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request, nextF middlewareLib.NextF) {
+	defer r.Body.Close()
+
+	bodyData, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.Write([]byte("body error"))
+		return
+	}
+
+	bodyMap := map[string]interface{}{}
+	if err := json.Unmarshal(bodyData, &bodyMap); err != nil {
+		w.Write([]byte("body parse error"))
+		return
+	}
+	size := int(bodyMap["size"].(float64))
+	totalCnt := int(bodyMap["totalCnt"].(float64))
+
+	db, err := lib.GetDB()
+	if err != nil {
+		w.Write([]byte("connect db failed"))
+		return
+	}
+	// 计算总记录数
+	startTime := time.Now()
+
+	cntCh := make(chan int64, 10000)
+	wgForCnt := &sync.WaitGroup{}
+
+	userCh := make(chan *model.User, 100)
+	wgForUser := &sync.WaitGroup{}
+
+	userBatchCh := make(chan *model.UserBatch, 10)
+	wgForUserBatch := &sync.WaitGroup{}
+	sid := lib.GetUuid()
+
+	for i := 0; i < runtime.NumCPU()*5; i++ {
+		wgForCnt.Add(1)
+		go func() {
+			for cnt := range cntCh {
+				sTime := time.Now()
+
+				userName := fmt.Sprintf("user_%v_%v", sid, cnt)
+				user, _ := model.NewUser(userName, "pwd123")
+
+				nowTime := time.Now()
+				totalDuration := nowTime.Sub(startTime)
+				calPwdDuration := nowTime.Sub(sTime)
+				logx.Infof("create user %v totalDuration %v calPasswordCostTime: %v cntChLen: %v userChLen:%v userArrChLen:%v \n", user.UserName, totalDuration, calPwdDuration, len(cntCh), len(userCh), len(userBatchCh))
+				userCh <- user
+			}
+			wgForCnt.Done()
+		}()
+	}
+
+	for i := 0; i < runtime.NumCPU(); i++ {
+		wgForUser.Add(1)
+		go func() {
+			defer func() {
+				wgForUser.Done()
+			}()
+			userArrMap := make(map[string][]*model.User)
+
+			tickerCh := time.Tick(time.Second)
+			var sendAllFunc = func() {
+				for tableName, arr := range userArrMap {
+					if tableName != "" && len(arr) > 0 {
+						userBatch := model.NewUserBatch(arr)
+						userBatchCh <- userBatch
+					}
+				}
+				userArrMap = make(map[string][]*model.User)
+			}
+			chIsOpen := true
+			for {
+				if !chIsOpen {
+					break
+				}
+				select {
+				case user, open := <-userCh:
+					chIsOpen = open
+					if !open {
+						break
+					}
+
+					arr := userArrMap[user.TableName()]
+					arr = append(arr, user)
+					if len(arr) >= size {
+						userBatchCh <- model.NewUserBatch(arr)
+						arr = nil
+					}
+					userArrMap[user.TableName()] = arr
+				case <-tickerCh:
+					sendAllFunc()
+				}
+
+			}
+			sendAllFunc()
+
+		}()
+	}
+
+	var totalCreateUserAtomic int32 = 0
+	for i := 0; i < runtime.NumCPU()*5; i++ {
+		wgForUserBatch.Add(1)
+		go func() {
+			defer func() {
+				wgForUserBatch.Done()
+			}()
+			for userBatch := range userBatchCh {
+				sTime := time.Now()
+
+				sql, values := userBatch.BatchInsertSQL()
+				// 执行原生SQL
+				statusCmd := db.Exec(sql, values...)
+				if statusCmd.Error != nil {
+					logx.Errorf("\ntable: %v\nsql: %v values: %v userBatch: %v err: %v\n", userBatch.TableName, sql, values, userBatch, lib.NewXError(statusCmd.Error, "批量插入失败"))
+				} else {
+					count := statusCmd.RowsAffected
+					atomic.AddInt32(&totalCreateUserAtomic, int32(count))
+
+					nowTime := time.Now()
+					totalDuration := nowTime.Sub(startTime)
+					sqlDuration := nowTime.Sub(sTime)
+					logx.Infof("create %v users totalDuration %v sqlCostTime: %v cntChLen: %v userChLen:%v userBatchChLen:%v \n", count, totalDuration, sqlDuration, len(cntCh), len(userCh), len(userBatchCh))
+				}
+
+			}
+
+		}()
+	}
+
+	var cnt int = 0
+	for cnt < totalCnt {
+		cnt++
+		cntCh <- int64(cnt)
+	}
+
+	close(cntCh)
+	wgForCnt.Wait()
+
+	close(userCh)
+	wgForUser.Wait()
+
+	close(userBatchCh)
+	wgForUserBatch.Wait()
+
+	endTime := time.Now()
+	duration := endTime.Sub(startTime)
+
+	LoadAllUser_to_NotLoginStatus(ctx, true)
+	logx.Infof("cost time %v seconds to create %v users success(%v)\n", duration, cnt, totalCreateUserAtomic)
+	fmt.Fprintf(w, "cost time %v seconds to create %v users success(%v)\n", duration, cnt, totalCreateUserAtomic)
+	logx.Info("batchCreateUserDone")
+}
+
+var userLoginSessionDuration = time.Minute * 10
 var loginUser middlewareLib.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request, nextF middlewareLib.NextF) {
 	defer r.Body.Close()
 
@@ -140,7 +343,8 @@ var loginUser middlewareLib.HandF = func(ctx context.Context, w http.ResponseWri
 		logx.Infof("del cookie: %v err: %v\n", cookie.Value, statusCmd.Err())
 	}
 
-	statusCmd := redisCli.Set(ctx, fmt.Sprintf("c_%v", cookieID), config.WriteIntoJSONIndent(user), time.Hour*24)
+	statusCmd := redisCli.Set(ctx, fmt.Sprintf("c_%v", cookieID), config.WriteIntoJSONIndent(user), userLoginSessionDuration)
+	MakeUserLogin(ctx, []*model.User{user})
 	if statusCmd.Err() != nil {
 		logx.Errorf("设置Cookie失败 %v\n", statusCmd.Err())
 		return
@@ -157,8 +361,61 @@ var loginUser middlewareLib.HandF = func(ctx context.Context, w http.ResponseWri
 
 	// 将Cookie添加到响应头
 	http.SetCookie(w, cookie)
-	w.Write([]byte("user login success"))
-	return
+	fmt.Fprintf(w, "%v", config.WriteIntoJSONIndent(user))
+}
+
+var getNotLoginRandomUser middlewareLib.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request, nextF middlewareLib.NextF) {
+	defer r.Body.Close()
+
+	bodyData, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.Write([]byte("body error"))
+		return
+	}
+	m := make(map[string]any)
+	if err := json.Unmarshal(bodyData, &m); err != nil {
+		logx.Errorf("body解析失败: %v %v", bodyData, err)
+		w.Write([]byte("body 解析失败"))
+		return
+	}
+	count := int64(m["count"].(float64))
+
+	userDTO := &UserDTO{}
+	if err := json.Unmarshal(bodyData, userDTO); err != nil {
+		w.Write([]byte("body parse error"))
+		return
+	}
+	rCli := lib.GetRedisClient()
+	// 获取分数小于50的元素（按分数升序排列）
+	// 使用 "-inf" 表示负无穷，"(50" 表示小于50（不包含50）
+	queryCond := &redis.ZRangeBy{
+		Min:   "-inf",
+		Max:   fmt.Sprintf("(%v", time.Now().Add(-userLoginSessionDuration).Unix()), // 登陆时间在 session 之前的用户
+		Count: count,
+	}
+	uuidList, err := rCli.ZRangeByScore(ctx, "loginStatus", queryCond).Result()
+	if err != nil {
+		logx.Errorf("查询未登录数据失败 %v %v", queryCond, err)
+	}
+
+	users, err := findUserByUUID(ctx, uuidList)
+	// logx.Infof("uuidList: %v users: %v\n", uuidList, users)
+	if err != nil {
+		logx.Errorf("查询用户失败: %v %v", users, err)
+		w.Write([]byte("查询用户失败"))
+		return
+	}
+	ret := map[string]any{
+		"uuid":  uuidList,
+		"users": users,
+	}
+	fmt.Fprintf(w, "%v", config.WriteIntoJSONIndent(ret))
+}
+
+var reInitNotLoginSet middlewareLib.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request, nextF middlewareLib.NextF) {
+	defer r.Body.Close()
+	LoadAllUser_to_NotLoginStatus(ctx, true)
+	w.Write([]byte("reload done"))
 }
 
 var queryUser middlewareLib.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request, nextF middlewareLib.NextF) {
@@ -185,5 +442,4 @@ var queryUser middlewareLib.HandF = func(ctx context.Context, w http.ResponseWri
 		return
 	}
 	w.Write([]byte(val))
-	return
 }

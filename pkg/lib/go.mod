@@ -1,8 +1,9 @@
-module github.com/ruandao/distribute-im-gateway/src/lib
+module github.com/ruandao/distribute-im-gateway/pkg/lib
 
 go 1.24.3
 
 require (
+	github.com/bwmarrin/snowflake v0.3.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/pkg/errors v0.9.1
 	go.uber.org/zap v1.27.0

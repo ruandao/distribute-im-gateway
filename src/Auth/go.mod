@@ -17,7 +17,6 @@ require (
 	github.com/ruandao/distribute-im-gateway/pkg/lib v1.1.1
 	github.com/ruandao/distribute-im-gateway/pkg/middlewareLib v0.0.0-00010101000000-000000000000
 	github.com/ruandao/distribute-im-gateway/pkg/traffic v0.0.0-00010101000000-000000000000
-	golang.org/x/crypto v0.39.0
 	google.golang.org/grpc v1.73.0
 	google.golang.org/protobuf v1.36.6
 	gorm.io/gorm v1.30.0
@@ -31,6 +30,7 @@ require (
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
+	github.com/go-redis/redis v6.15.9+incompatible // indirect
 	github.com/go-redis/redis/v8 v8.11.5 // indirect
 	github.com/go-sql-driver/mysql v1.9.3 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect

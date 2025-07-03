@@ -19,3 +19,8 @@ if [ -f "data/etcd/data.txt" ]; then
 else
     echo "未找到 data/etcd/data.txt 文件，跳过数据导入。"
 fi
+
+
+
+
+docker compose up -d etcdService

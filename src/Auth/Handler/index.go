@@ -18,11 +18,17 @@ func Register() {
 		middlewareLib.MetricsMiddleware,
 		registerUser,
 	))
+	http.HandleFunc("/multipleCreateUser", middlewareLib.H(
+		middlewareLib.LogReqHandler,
+		middlewareLib.MetricsMiddleware,
+		multipleCreateUser,
+	))
 	http.HandleFunc("/batchCreateUser", middlewareLib.H(
 		middlewareLib.LogReqHandler,
 		middlewareLib.MetricsMiddleware,
 		batchCreateUser,
 	))
+
 	http.HandleFunc("/login", middlewareLib.H(
 		middlewareLib.LogReqHandler,
 		middlewareLib.MetricsMiddleware,
@@ -33,6 +39,16 @@ func Register() {
 		middlewareLib.LogReqHandler,
 		middlewareLib.MetricsMiddleware,
 		queryUser,
+	))
+	http.HandleFunc("/getNotLoginRandomUser", middlewareLib.H(
+		middlewareLib.LogReqHandler,
+		middlewareLib.MetricsMiddleware,
+		getNotLoginRandomUser,
+	))
+	http.HandleFunc("/reInitNotLoginSet", middlewareLib.H(
+		middlewareLib.LogReqHandler,
+		middlewareLib.MetricsMiddleware,
+		reInitNotLoginSet,
 	))
 
 	http.HandleFunc("/cometAddr", middlewareLib.H(

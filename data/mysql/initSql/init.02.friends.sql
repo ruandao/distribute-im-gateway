@@ -1,0 +1,48 @@
+-- -- 创建数据库
+-- CREATE DATABASE IF NOT EXISTS wechat CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- USE wechat;
+
+-- -- 创建用户并授权（请修改密码！）
+-- CREATE USER IF NOT EXISTS 'authCli'@'%' IDENTIFIED BY 'authCliXXX';
+-- GRANT ALL PRIVILEGES ON wechat.* TO 'authCli'@'%';
+-- FLUSH PRIVILEGES;
+
+-- -- 创建用户表
+-- CREATE TABLE IF NOT EXISTS users_00 (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     region VARCHAR(50) NOT NULL,
+--     uuid BIGINT NOT NULL,
+--     user_name VARCHAR(50) NOT NULL UNIQUE,
+--     user_password_hash VARCHAR(255) NOT NULL,
+--     deleted_at TIMESTAMP DEFAULT NULL,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+-- );
+
+-- CREATE TABLE IF NOT EXISTS users_01 (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     region VARCHAR(50) NOT NULL,
+--     uuid BIGINT NOT NULL,
+--     user_name VARCHAR(50) NOT NULL UNIQUE,
+--     user_password_hash VARCHAR(255) NOT NULL,
+--     deleted_at TIMESTAMP DEFAULT NULL,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+-- );
+
+
+-- -- 创建文章表
+-- CREATE TABLE IF NOT EXISTS articles (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     title VARCHAR(200) NOT NULL,
+--     content TEXT NOT NULL,
+--     user_id INT NOT NULL,
+--     published BOOLEAN DEFAULT FALSE,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+--     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+-- );
+
+-- -- 创建索引
+-- CREATE INDEX idx_users_username ON users(user_name);
+-- CREATE INDEX idx_articles_published ON articles(published);
