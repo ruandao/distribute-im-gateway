@@ -1,72 +1,250 @@
 <mxfile host="65bd71144e">
     <diagram id="wXllVKrE9OAaDM3rbc0w" name="Page-1">
-        <mxGraphModel dx="1804" dy="1795" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="2505" dy="682" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="2" value="User" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="70" width="140" height="120" as="geometry"/>
+                <mxCell id="2" value="User_%x" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="45" y="30" width="140" height="150" as="geometry"/>
                 </mxCell>
-                <mxCell id="3" value="Region" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+                <mxCell id="3" value="Region" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="2" vertex="1">
                     <mxGeometry y="30" width="140" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="4" value="Uuid" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+                <mxCell id="4" value="Uuid" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="2" vertex="1">
                     <mxGeometry y="60" width="140" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="5" value="Username" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="2">
+                <mxCell id="75" value="Username" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="2">
                     <mxGeometry y="90" width="140" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="15" style="edgeStyle=none;html=1;" edge="1" parent="1" source="6" target="13">
+                <mxCell id="5" value="version" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="2" vertex="1">
+                    <mxGeometry y="120" width="140" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" style="edgeStyle=none;html=1;" parent="1" source="6" target="13" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="16" value="Copy" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="15">
+                <mxCell id="16" value="数据变动将同步到各个服务机房" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="15" vertex="1" connectable="0">
                     <mxGeometry x="-0.0151" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="6" value="" style="swimlane;startSize=0;" vertex="1" parent="1">
-                    <mxGeometry x="20" y="250" width="400" height="570" as="geometry"/>
+                <mxCell id="6" value="" style="swimlane;startSize=0;" parent="1" vertex="1">
+                    <mxGeometry x="45" y="320" width="380" height="440" as="geometry"/>
                 </mxCell>
-                <mxCell id="7" value="GZone" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="6">
+                <mxCell id="7" value="GZone" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="6" vertex="1">
                     <mxGeometry x="164" y="10" width="60" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="11" style="edgeStyle=none;html=1;" edge="1" parent="6" source="8" target="9">
+                <mxCell id="11" style="edgeStyle=none;html=1;" parent="6" source="8" target="9" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="12" style="edgeStyle=none;html=1;" edge="1" parent="6" source="8" target="10">
+                <mxCell id="12" style="edgeStyle=none;html=1;" parent="6" source="8" target="10" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="8" value="Master" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="6">
+                <mxCell id="8" value="Master" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="6" vertex="1">
                     <mxGeometry x="164" y="90" width="60" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="9" value="Slave" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="6">
+                <mxCell id="9" value="Slave" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="6" vertex="1">
                     <mxGeometry x="50" y="300" width="60" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="10" value="Slave" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="6">
+                <mxCell id="10" value="Slave" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="6" vertex="1">
                     <mxGeometry x="250" y="300" width="60" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="13" value="" style="swimlane;startSize=0;" vertex="1" parent="1">
-                    <mxGeometry x="600" y="260" width="200" height="200" as="geometry"/>
+                <mxCell id="13" value="" style="swimlane;startSize=0;" parent="1" vertex="1">
+                    <mxGeometry x="135" y="850" width="200" height="200" as="geometry"/>
                 </mxCell>
-                <mxCell id="14" value="CZone" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="13">
+                <mxCell id="14" value="CZone" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="13" vertex="1">
                     <mxGeometry x="73" y="20" width="60" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="17" value="数据存放在自身的机房，并同步复制到其他区域，修改需要回源到 region 机房进行修改" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="1">
-                    <mxGeometry x="320" y="-70" width="141" height="150" as="geometry"/>
+                <mxCell id="17" value="数据存放在自身的机房，并同步复制到其他区域，修改需要回源到 region 机房进行修改" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" parent="1" vertex="1">
+                    <mxGeometry x="295" y="30" width="141" height="150" as="geometry"/>
                 </mxCell>
-                <mxCell id="18" style="edgeStyle=none;html=1;" edge="1" parent="1" source="3" target="17">
+                <mxCell id="18" style="edgeStyle=none;html=1;" parent="1" source="3" target="17" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="19" value="根据 UUID 进行取模分表&lt;br&gt;-------&lt;div&gt;UUID 主要是用于做其他表的外键时使用&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="1">
-                    <mxGeometry x="-190" y="10" width="110" height="140" as="geometry"/>
+                <mxCell id="19" value="根据 UUID 进行取模分表&lt;br&gt;-------&lt;div&gt;UUID 主要是用于做其他表的外键时使用&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" parent="1" vertex="1">
+                    <mxGeometry x="-260" y="35" width="110" height="140" as="geometry"/>
                 </mxCell>
-                <mxCell id="20" style="edgeStyle=none;html=1;" edge="1" parent="1" source="4" target="19">
+                <mxCell id="20" style="edgeStyle=none;html=1;" parent="1" source="4" target="19" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="22" value="Redis&lt;br&gt;-------------&lt;br&gt;在 Redis 建立 Username -&amp;gt; Uuid 的映射，&lt;br&gt;用于登陆时定位到用户数据" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="510" y="100" width="190" height="120" as="geometry"/>
+                <mxCell id="22" value="Redis&lt;br&gt;-------------&lt;br&gt;在 Redis 建立 Username -&amp;gt; Uuid 的映射，&lt;br&gt;用于登陆时定位到用户数据" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="485" y="200" width="190" height="120" as="geometry"/>
                 </mxCell>
-                <mxCell id="23" style="edgeStyle=none;html=1;" edge="1" parent="1" source="5" target="22">
+                <mxCell id="23" style="edgeStyle=none;html=1;" parent="1" source="5" target="22" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" style="edgeStyle=none;html=1;" edge="1" parent="1" source="24" target="6">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="26" value="写入&lt;br&gt;仅允许向全局副本写入" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="25">
+                    <mxGeometry x="-0.1016" y="3" relative="1" as="geometry">
+                        <mxPoint x="1" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="27" style="edgeStyle=none;html=1;" edge="1" parent="1" source="24" target="13">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="28" value="读取当前机房的数据" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="27">
+                    <mxGeometry x="-0.0777" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="24" value="请求" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-490" y="690" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="35" style="edgeStyle=none;html=1;" edge="1" parent="1" source="74" target="31">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-542.9166666666665" y="2000" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="69" value="发送请求到 GZone" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="35">
+                    <mxGeometry x="-0.173" y="-3" relative="1" as="geometry">
+                        <mxPoint x="1" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="39" value="" style="swimlane;startSize=0;" vertex="1" parent="1">
+                    <mxGeometry x="-110" y="1200" width="914" height="640" as="geometry"/>
+                </mxCell>
+                <mxCell id="40" value="GZone" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="39">
+                    <mxGeometry x="315.5" y="30" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="64" style="edgeStyle=none;html=1;" edge="1" parent="39" source="31" target="63">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="服务节点" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="39">
+                    <mxGeometry x="140" y="70" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" value="kafka" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="39">
+                    <mxGeometry x="591" y="270" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="33" style="edgeStyle=none;html=1;" edge="1" parent="39" source="65" target="32">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="34" value="2.发送数据最新版本号" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="33">
+                    <mxGeometry x="0.0172" y="-1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="37" style="edgeStyle=none;html=1;" edge="1" parent="39" source="65" target="49">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="711.0589969354819" y="128.2265975424698" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="38" value="1.变更数据" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="37">
+                    <mxGeometry x="0.0525" y="3" relative="1" as="geometry">
+                        <mxPoint x="1" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="49" value="mysql" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="39">
+                    <mxGeometry x="786.5" y="80" width="60" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="66" style="edgeStyle=none;html=1;" edge="1" parent="39" source="63" target="65">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="63" value="kafka" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="39">
+                    <mxGeometry x="375.5" y="70" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="71" style="edgeStyle=none;html=1;" edge="1" parent="39" source="65" target="70">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="65" value="消费者" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="39">
+                    <mxGeometry x="591" y="80" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="70" value="redis" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="39">
+                    <mxGeometry x="390" y="330" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="73" value="4. 访问缓存数据" style="edgeStyle=none;html=1;" edge="1" parent="39" source="72" target="70">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="72" value="服务节点" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="39">
+                    <mxGeometry x="140" y="420" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="41" value="" style="swimlane;startSize=0;" vertex="1" parent="1">
+                    <mxGeometry x="-750" y="1880" width="1570" height="430" as="geometry"/>
+                </mxCell>
+                <mxCell id="43" value="CZone" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="41">
+                    <mxGeometry x="1270" y="400" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="47" style="edgeStyle=none;html=1;" edge="1" parent="41" source="44" target="46">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="48" value="标记最新版本号" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="47">
+                    <mxGeometry x="-0.0156" y="3" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="44" value="kafka" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="41">
+                    <mxGeometry x="1270" y="60" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="46" value="redis" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="41">
+                    <mxGeometry x="1110" y="150" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="54" style="edgeStyle=none;html=1;" edge="1" parent="41" source="50" target="53">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="50" value="mysql" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="41">
+                    <mxGeometry x="1450" y="60" width="60" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="55" style="edgeStyle=none;html=1;" edge="1" parent="41" source="53" target="46">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="56" value="删除缓存数据，比对后删除最新版本号" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="55">
+                    <mxGeometry x="-0.1539" y="1" relative="1" as="geometry">
+                        <mxPoint x="1" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="53" value="消费者" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="41">
+                    <mxGeometry x="1400" y="240" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="61" style="edgeStyle=none;html=1;" edge="1" parent="41" source="58" target="46">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="62" value="2.&amp;nbsp;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;获取最新版本号和数据副本&lt;/span&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="61">
+                    <mxGeometry x="0.0418" y="-3" relative="1" as="geometry">
+                        <mxPoint y="-1" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="58" value="服务节点" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="41">
+                    <mxGeometry x="800" y="260" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="57" value="读请求" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="41">
+                    <mxGeometry x="100" y="270" width="120" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="59" style="edgeStyle=none;html=1;" edge="1" parent="41" source="57" target="58">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="60" value="1.&amp;nbsp;&lt;div&gt;发送请求到服务节点&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="59">
+                    <mxGeometry x="0.0004" y="4" relative="1" as="geometry">
+                        <mxPoint x="-1" y="-1" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="74" value="变更请求" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="41">
+                    <mxGeometry x="70" y="90" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="45" style="edgeStyle=none;html=1;" edge="1" parent="1" source="32" target="44">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="51" style="edgeStyle=none;html=1;" edge="1" parent="1" source="49" target="50">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="52" value="binlog" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="51">
+                    <mxGeometry x="0.0108" y="2" relative="1" as="geometry">
+                        <mxPoint y="-1" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="67" style="edgeStyle=none;html=1;" edge="1" parent="1" source="58" target="72">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-121" y="1676.66650390625" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="68" value="3.将请求路由回GZone" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="67">
+                    <mxGeometry x="-0.1576" y="-1" relative="1" as="geometry">
+                        <mxPoint y="-1" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="76" value="乐观锁&lt;div&gt;多机房缓存一致性&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="1">
+                    <mxGeometry x="-570" y="200" width="100" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="78" style="edgeStyle=none;html=1;" edge="1" parent="1" source="5" target="76">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
             </root>
