@@ -288,9 +288,11 @@ var batchCreateUser middlewareLib.HandF = func(ctx context.Context, w http.Respo
 	endTime := time.Now()
 	duration := endTime.Sub(startTime)
 
-	LoadAllUser_to_NotLoginStatus(ctx, true)
-	logx.Infof("cost time %v seconds to create %v users success(%v)\n", duration, cnt, totalCreateUserAtomic)
-	fmt.Fprintf(w, "cost time %v seconds to create %v users success(%v)\n", duration, cnt, totalCreateUserAtomic)
+	tps := cnt / int(duration/time.Second)
+	// LoadAllUser_to_NotLoginStatus(ctx, true)
+	msg := fmt.Sprintf("Cost time %v seconds to create %v users success(%v), %v TPS\n", duration, cnt, totalCreateUserAtomic, tps)
+	logx.Info(msg)
+	fmt.Fprint(w, msg)
 	logx.Info("batchCreateUserDone")
 }
 

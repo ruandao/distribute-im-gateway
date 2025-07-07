@@ -58,6 +58,17 @@ services:
       timeout: 10s
       retries: 3
 
+  mysqld-exporter:
+    image: prom/mysqld-exporter
+    container_name: mysqld-exporter
+    hostname: mysqld-exporter
+    ports:
+      - 9104:9104
+    volumes:
+      - ./data/monitor/mysql/user_my.cnf:/.my.cnf
+    restart: always
+
+
 
   etcdService:
     image: bitnami/etcd:3.6.1
