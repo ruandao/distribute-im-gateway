@@ -12,4 +12,6 @@ CREATE TABLE IF NOT EXISTS users_000 (
 CREATE INDEX idx_users_username ON users_000(user_name);
 CREATE INDEX idx_users_created_at ON users_000(created_at);
 CREATE INDEX idx_users_updated_at ON users_000(updated_at);
+CREATE INDEX idx_users_deleted_at ON users_000(deleted_at);
+
 
