@@ -82,7 +82,6 @@ var findUserByUUID = func(_ context.Context, uuidList []string) ([]*model.User, 
 var LoadAllUser_to_NotLoginStatus = func(ctx context.Context, force bool) {
 	rCli := lib.GetRedisClient()
 	if !force {
-
 		result, err := rCli.Exists(ctx, "loginStatus").Result()
 		if err != nil {
 			return
@@ -94,6 +93,12 @@ var LoadAllUser_to_NotLoginStatus = func(ctx context.Context, force bool) {
 	}
 
 	rCli.Del(ctx, "loginStatus")
+	rCli.Del(ctx, "uuid")
+	defer func() {
+		rCli.Expire(ctx, "loginStatus", time.Hour*12)
+		rCli.Expire(ctx, "uuid", time.Hour*12)
+	}()
+
 	db, err := lib.GetDB()
 	if err != nil {
 		logx.Fatal(lib.NewXError(err, "连接数据库失败"))

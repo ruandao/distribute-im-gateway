@@ -62,6 +62,19 @@ var registerUser middlewareLib.HandF = func(ctx context.Context, w http.Response
 // 单行进行写入, 单机性能 TPS 在 1200/s
 var multipleCreateUser middlewareLib.HandF = func(ctx context.Context, w http.ResponseWriter, r *http.Request, nextF middlewareLib.NextF) {
 	defer r.Body.Close()
+	bodyData, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.Write([]byte("body read error"))
+		return
+	}
+
+	bodyMap := map[string]interface{}{}
+	if err := json.Unmarshal(bodyData, &bodyMap); err != nil {
+		w.Write([]byte("body parse error"))
+		return
+	}
+	size := int(bodyMap["size"].(float64))
+	totalCnt := int(bodyMap["totalCnt"].(float64))
 
 	db, err := lib.GetDB()
 	if err != nil {
@@ -70,6 +83,7 @@ var multipleCreateUser middlewareLib.HandF = func(ctx context.Context, w http.Re
 	}
 	// 计算总记录数
 	var count int64
+
 	result := db.Model(&model.User{}).Count(&count)
 	if result.Error != nil {
 		w.Write([]byte("failed to count records"))
@@ -86,15 +100,15 @@ var multipleCreateUser middlewareLib.HandF = func(ctx context.Context, w http.Re
 		wgForCnt.Add(1)
 		go func() {
 			for cnt := range cntCh {
-				sTime := time.Now()
+				// sTime := time.Now()
 
 				userName := fmt.Sprintf("user_%v", count+cnt)
 				user, _ := model.NewUser(userName, "pwd123")
 
-				nowTime := time.Now()
-				totalDuration := nowTime.Sub(startTime)
-				calPwdDuration := nowTime.Sub(sTime)
-				logx.Infof("create user %v totalDuration %v calPasswordCostTime: %v cntChLen: %v userChLen:%v \n", user.UserName, totalDuration, calPwdDuration, len(cntCh), len(userCh))
+				// nowTime := time.Now()
+				// totalDuration := nowTime.Sub(startTime)
+				// calPwdDuration := nowTime.Sub(sTime)
+				// logx.Infof("create user %v totalDuration %v calPasswordCostTime: %v cntChLen: %v userChLen:%v \n", user.UserName, totalDuration, calPwdDuration, len(cntCh), len(userCh))
 				userCh <- user
 			}
 			wgForCnt.Done()
@@ -102,26 +116,42 @@ var multipleCreateUser middlewareLib.HandF = func(ctx context.Context, w http.Re
 	}
 	wgForSql := &sync.WaitGroup{}
 
-	for i := 0; i < runtime.NumCPU()*5; i++ {
+	tpsPrefix := "tps[]"
+
+	tps := int32(0)
+	onFlyTPS := int32(0)
+	_, cancel := lib.TickerRun(ctx, time.NewTicker(time.Second), func() {
+		xTPS := atomic.SwapInt32(&tps, 0)
+		tpsPrefix = fmt.Sprintf("tps[%v/%v]", xTPS, onFlyTPS)
+	})
+
+	totalCreateUserAtomic := int32(0)
+	for i := 0; i < size; i++ {
 		wgForSql.Add(1)
 		go func() {
 			for user := range userCh {
 				sTime := time.Now()
+				atomic.AddInt32(&onFlyTPS, 1)
 				result := db.Create(user)
 				if result.Error != nil {
 					w.Write([]byte(fmt.Sprintf("create user %v fail\n", user.UserName)))
+					continue
 				}
+
+				atomic.AddInt32(&totalCreateUserAtomic, 1)
+				atomic.AddInt32(&onFlyTPS, -1)
+				atomic.AddInt32(&tps, 1)
 				nowTime := time.Now()
 				totalDuration := nowTime.Sub(startTime)
 				sqlDuration := nowTime.Sub(sTime)
-				logx.Infof("create user %v totalDuration %v sqlCostTime: %v cntChLen: %v userChLen:%v\n", user.UserName, totalDuration, sqlDuration, len(cntCh), len(userCh))
+				logx.Infof("%vcreate user %v totalDuration %v sqlCostTime: %v cntChLen: %v userChLen:%v\n", tpsPrefix, user.UserName, totalDuration, sqlDuration, len(cntCh), len(userCh))
 			}
 			wgForSql.Done()
 		}()
 	}
 
 	var cnt int64 = 0
-	for cnt < 10000*100 {
+	for cnt < int64(totalCnt) {
 		cnt++
 		cntCh <- cnt
 	}
@@ -131,10 +161,17 @@ var multipleCreateUser middlewareLib.HandF = func(ctx context.Context, w http.Re
 
 	close(userCh)
 	wgForSql.Wait()
+	cancel()
 
 	endTime := time.Now()
 	duration := endTime.Sub(startTime)
 	w.Write([]byte(fmt.Sprintf("cost time %v seconds to create %v users\n", duration, cnt)))
+
+	totalTPS := totalCnt / int(duration/time.Second)
+	// LoadAllUser_to_NotLoginStatus(ctx, true)
+	msg := fmt.Sprintf("Cost time %v seconds to create %v users success(%v), %v TPS\n", duration, cnt, totalCreateUserAtomic, totalTPS)
+	logx.Info(msg)
+	fmt.Fprint(w, msg)
 	logx.Info("multipleCreateUser")
 }
 
@@ -153,7 +190,8 @@ var batchCreateUser middlewareLib.HandF = func(ctx context.Context, w http.Respo
 		w.Write([]byte("body parse error"))
 		return
 	}
-	size := int(bodyMap["size"].(float64))
+	batchSize := int(bodyMap["batchSize"].(float64))
+	concurrencySize := int(bodyMap["concurrencySize"].(float64))
 	totalCnt := int(bodyMap["totalCnt"].(float64))
 
 	db, err := lib.GetDB()
@@ -161,6 +199,14 @@ var batchCreateUser middlewareLib.HandF = func(ctx context.Context, w http.Respo
 		w.Write([]byte("connect db failed"))
 		return
 	}
+
+	tps := int32(0)
+	onFlyTPS := int32(0)
+	tpsPrefix := "[]"
+	_, cancel := lib.TickerRun(ctx, time.NewTicker(time.Second), func() {
+		xTPS := atomic.SwapInt32(&tps, 0)
+		tpsPrefix = fmt.Sprintf("tps[%v/%v]", xTPS, onFlyTPS)
+	})
 	// 计算总记录数
 	startTime := time.Now()
 
@@ -225,7 +271,7 @@ var batchCreateUser middlewareLib.HandF = func(ctx context.Context, w http.Respo
 
 					arr := userArrMap[user.TableName()]
 					arr = append(arr, user)
-					if len(arr) >= size {
+					if len(arr) >= batchSize {
 						userBatchCh <- model.NewUserBatch(arr)
 						arr = nil
 					}
@@ -241,7 +287,7 @@ var batchCreateUser middlewareLib.HandF = func(ctx context.Context, w http.Respo
 	}
 
 	var totalCreateUserAtomic int32 = 0
-	for i := 0; i < runtime.NumCPU()*5; i++ {
+	for i := 0; i < concurrencySize; i++ {
 		wgForUserBatch.Add(1)
 		go func() {
 			defer func() {
@@ -251,8 +297,11 @@ var batchCreateUser middlewareLib.HandF = func(ctx context.Context, w http.Respo
 				sTime := time.Now()
 
 				sql, values := userBatch.BatchInsertSQL()
+				atomic.AddInt32(&onFlyTPS, 1)
 				// 执行原生SQL
 				statusCmd := db.Exec(sql, values...)
+				atomic.AddInt32(&onFlyTPS, -1)
+				atomic.AddInt32(&tps, 1)
 				if statusCmd.Error != nil {
 					logx.Errorf("\ntable: %v\nsql: %v values: %v userBatch: %v err: %v\n", userBatch.TableName, sql, values, userBatch, lib.NewXError(statusCmd.Error, "批量插入失败"))
 				} else {
@@ -262,7 +311,7 @@ var batchCreateUser middlewareLib.HandF = func(ctx context.Context, w http.Respo
 					nowTime := time.Now()
 					totalDuration := nowTime.Sub(startTime)
 					sqlDuration := nowTime.Sub(sTime)
-					logx.Infof("create %v users totalDuration %v sqlCostTime: %v cntChLen: %v userChLen:%v userBatchChLen:%v \n", count, totalDuration, sqlDuration, len(cntCh), len(userCh), len(userBatchCh))
+					logx.Infof("%vcreate %v users totalDuration %v sqlCostTime: %v cntChLen: %v userChLen:%v userBatchChLen:%v \n", tpsPrefix, count, totalDuration, sqlDuration, len(cntCh), len(userCh), len(userBatchCh))
 				}
 
 			}
@@ -285,12 +334,13 @@ var batchCreateUser middlewareLib.HandF = func(ctx context.Context, w http.Respo
 	close(userBatchCh)
 	wgForUserBatch.Wait()
 
+	cancel()
 	endTime := time.Now()
 	duration := endTime.Sub(startTime)
 
-	tps := cnt / int(duration/time.Second)
+	totalTPS := cnt / int(duration/time.Second)
 	// LoadAllUser_to_NotLoginStatus(ctx, true)
-	msg := fmt.Sprintf("Cost time %v seconds to create %v users success(%v), %v TPS\n", duration, cnt, totalCreateUserAtomic, tps)
+	msg := fmt.Sprintf("Cost time %v seconds to create %v users success(%v), %v TPS\n", duration, cnt, totalCreateUserAtomic, totalTPS)
 	logx.Info(msg)
 	fmt.Fprint(w, msg)
 	logx.Info("batchCreateUserDone")
