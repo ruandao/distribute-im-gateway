@@ -14,10 +14,6 @@ scrape_configs:
   - job_name: 'go_comet'
     static_configs:
       - targets: ['host.docker.internal:8900', 'host.docker.internal:8901']      
-  - job_name: 'sql_exporter'
-    metrics_path: /metrics
-    static_configs:
-    - targets: ['host.docker.internal:9399']      
 
   - job_name: mysql # To get metrics about the mysql exporter’s targets
     metrics_path: /probe
