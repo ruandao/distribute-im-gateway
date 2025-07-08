@@ -1,6 +1,9 @@
 #!/bin/bash
 set -x
 
+cd deploy
+docker compose up -d etcdService
+
 # 检查data.txt文件是否存在
 if [ -f "data/etcd/data.txt" ]; then
     echo "开始导入初始数据..."
@@ -23,4 +26,4 @@ fi
 
 
 
-docker compose up -d etcdService
+

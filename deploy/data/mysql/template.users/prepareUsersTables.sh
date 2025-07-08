@@ -1,4 +1,5 @@
 #!/bin/bash
+cd deploy
 
 # 生成从 AA001 到 AA256 的用户ID并创建SQL插入语句
 output_file="data/mysql/template.users/init.01.users.sql"

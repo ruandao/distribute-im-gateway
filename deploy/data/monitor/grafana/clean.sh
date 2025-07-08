@@ -1,8 +1,9 @@
 #!/bin/bash
 
+cd deploy
 
 # 定义要操作的目录路径
-directory="./data/monitor/prometheus/data"
+directory="data/monitor/grafana/volumes"
 
 # 检查目录是否存在
 if [ -d "$directory" ]; then
@@ -14,7 +15,7 @@ else
 fi
 
 # 删除对应容器
-docker rm -f prometheus-test
+docker rm -f grafana-test
 
 # 创建目录
 # 创建目录
@@ -23,4 +24,4 @@ mkdir -p "$directory"
 echo "目录 $directory 创建成功。"
 
 
-docker compose up -d prometheus-test
+docker compose up -d grafana-test

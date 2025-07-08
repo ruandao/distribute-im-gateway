@@ -1,8 +1,9 @@
 #!/bin/bash
 
+cd deploy
 
 # 定义要操作的目录路径
-directory="./data/redis/volumes"
+directory="data/mysql/volumes"
 
 # 检查目录是否存在
 if [ -d "$directory" ]; then
@@ -14,7 +15,7 @@ else
 fi
 
 # 删除对应容器
-docker rm -f redis-test
+docker rm -f mysql-test
 
 # 创建目录
 # 创建目录
@@ -23,4 +24,7 @@ mkdir -p "$directory"
 echo "目录 $directory 创建成功。"
 
 
-docker compose up -d redis-test
+docker compose up -d mysql-test
+
+sleep 10
+docker logs mysql-test
