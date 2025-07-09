@@ -1,7 +1,7 @@
 
 
 provider "aws" {
-  region     = "us-east-1"
+  region     = var.region
 }
 
 resource "aws_vpc" "vpc" {
@@ -30,7 +30,7 @@ resource "aws_route_table" "route-table" {
 resource "aws_subnet" "subnet" {
   vpc_id            = aws_vpc.vpc.id
   cidr_block        = "10.0.1.0/24"
-  availability_zone = "us-east-1a"
+  availability_zone = "${var.region}a"
 
   tags = {
     name = "Prod Subnet"
@@ -82,10 +82,10 @@ resource "aws_network_interface" "server-nic" {
   private_ips     = ["10.0.1.50"]
   security_groups = [aws_security_group.sg.id]
 }
-resource "aws_instance" "server-instance" {
-  ami               = "ami-05ffe3c48a9991133"
+resource "aws_instance" "db" {
+  ami               =  var.ami
   instance_type     = "t3.micro"
-  availability_zone = "us-east-1a"
+  availability_zone = "${var.region}a"
   key_name          = "terraform-aws"
 
   network_interface {
@@ -106,12 +106,39 @@ resource "aws_instance" "server-instance" {
   }
 }
 
+
 resource "aws_eip" "one" {
   network_interface         = aws_network_interface.server-nic.id
   associate_with_private_ip = "10.0.1.50"
-  depends_on                = [aws_internet_gateway.igw, aws_instance.server-instance]
+  depends_on                = [aws_internet_gateway.igw, aws_instance.db]
 }
+
 output "eip_public_ip" {
   value = aws_eip.one.public_ip
   description = "弹性公网IP地址"
+}
+
+
+resource "local_file" "ip_output" {
+  filename = "${path.module}/../ansible-playbooks/inventory/awsenv.ini"
+  content = join("\n", [
+    "[dbSer]",
+    aws_eip.one.public_ip,
+    "",
+    "[dbSer:vars]",
+    "ansible_user=ec2-user",
+    "ansible_ssh_private_key_file=~/.ssh/terraform-aws",
+    "",
+  ])
+}
+
+
+resource "local_file" "ssh_conf" {
+  filename = "${path.module}/../ssh/config"
+  content = join("\n", [
+    "Host dbSer",
+    format("Hostname %s", aws_eip.one.public_ip),
+    "User ec2-user",
+    "IdentityFile ~/.ssh/terraform-aws",
+  ])
 }

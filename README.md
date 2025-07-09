@@ -5,6 +5,7 @@
 - [配置读写:](#配置读写)
 - [用户数据：](#用户数据)
 - [消息存储](#消息存储)
+- [服务器资源创建与释放](#服务器资源创建与释放)
 
 # distribute-im-gateway
 
@@ -32,6 +33,9 @@
 # 消息存储
 ![load chat messate store](./_docs/architect/_/chatMessageStore.png)
 
+---
+# 服务器资源创建与释放
+![resource create and release](./_docs/architect//_/autoDeploy.png)
 
 
 What would like to support:
