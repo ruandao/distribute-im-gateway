@@ -1,4 +1,6 @@
 #!/bin/bash
+# -*- coding: utf-8 -*-
+
 
 cd deploy
 docker compose pull mysql-test
