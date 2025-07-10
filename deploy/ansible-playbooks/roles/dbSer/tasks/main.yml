@@ -1,0 +1,29 @@
+- name: Print server name and user to remote 
+  shell: "echo '${date} Currently {{ ansible_user }} is logining {{ inventory_hostname }}({{ ansible_host }})' >> /home/{{ ansible_user }}/hi"
+
+- name: 检查仓库目录是否存在
+  stat:
+    path: ~/distribute-im-gateway  # 替换为你的仓库路径
+  register: repo_status
+
+- name: 克隆Git仓库（如果不存在）
+  git:
+    repo: 'https://github.com/ruandao/distribute-im-gateway'  # 替换为你的仓库URL
+    dest: ~/distribute-im-gateway
+    clone: yes
+    update: yes
+  when: not repo_status.stat.exists
+
+- name: 拉取最新代码（如果已存在）
+  git:
+    repo: 'https://github.com/ruandao/distribute-im-gateway'  # 替换为你的仓库URL
+    dest: ~/distribute-im-gateway
+    clone: no
+    update: yes
+  when: repo_status.stat.exists  
+
+- name: Change to Currently branch
+  shell: "cd distribute-im-gateway && git checkout devx/ljy-draft"
+
+- name: Run mysql
+  shell: 'cd distribute-im-gateway && bash deploy/data/mysql/clean.sh'

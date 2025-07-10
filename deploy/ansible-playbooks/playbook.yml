@@ -1,0 +1,10 @@
+- hosts: dbSer
+  gather_facts: yes
+  vars:
+    # 关键参数：
+    ansible_ssh_common_args: '-o ServerAliveInterval=30 -o ServerAliveCountMax=10'
+    # 延长超时时间：
+    ansible_ssh_connect_timeout: 60
+    ansible_timeout: 120
+  roles:
+    - role: dbSer

@@ -18,10 +18,6 @@ resource "aws_route_table" "route-table" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
-  route {
-    ipv6_cidr_block = "::/0"
-    gateway_id      = aws_internet_gateway.igw.id
-  }
   tags = {
     Name = "Prod RT"
   }
@@ -73,6 +69,13 @@ resource "aws_security_group" "sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow all outbound traffic"
+  }
   tags = {
     Name = " security_group"
   }
@@ -95,10 +98,17 @@ resource "aws_instance" "db" {
 
   user_data = <<-EOF
                 #!/bin/bash
-                sudo apt update -y
-                sudo apt install apache2 -y
-                sudo systemctl start apache2
-                sudo bash -c echo my very first web server > /var/www/html/index.html'
+                sudo yum update -y
+                sudo yum install -y docker git
+                sudo usermod -a -G docker ec2-user
+                id ec2-user
+                newgrp docker
+                sudo systemctl enable docker.service
+                sudo systemctl start docker.service
+                sudo curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-$(uname -m) -o /usr/libexec/docker/cli-plugins/docker-compose
+                sudo chmod +x /usr/libexec/docker/cli-plugins/docker-compose
+                cd && docker compose version > /home/ec2-user/docker_compose_version
+                echo "export LANG=zh_CN.UTF-8" >> /home/ec2-user/.bashrc
                 EOF
 
   tags = {

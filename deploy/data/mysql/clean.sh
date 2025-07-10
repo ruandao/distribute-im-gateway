@@ -1,6 +1,7 @@
 #!/bin/bash
 
 cd deploy
+docker compose pull mysql-test
 
 # 定义要操作的目录路径
 directory="data/mysql/volumes"
