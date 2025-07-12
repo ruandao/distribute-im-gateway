@@ -77,3 +77,6 @@ terraform.rc
 
 __pycache__
 inventory/
+deploy/_ssh/config
+deploy/money/output/ssh_error.log
+deploy/money/output/swarm_token.json

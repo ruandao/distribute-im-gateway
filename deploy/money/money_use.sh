@@ -14,7 +14,18 @@ cleanup() {
 }
 
 trap cleanup EXIT
-# 无限循环保持脚本运行
+
+# 60分钟后自动释放服务器资源或者收到中断指令后释放服务器资源
+# 计算60分钟后的时间戳
+target_time=$(( $(date +%s) + 3600 ))
+
+# 等待直到目标时间或收到中断信号
 while true; do
-    sleep 1  # 每秒检查一次信号
+    current_time=$(date +%s)
+    if [ $current_time -ge $target_time ]; then
+        echo "10 hours elapsed. Executing task."
+        cleanup
+        exit 0
+    fi
+    sleep 1
 done

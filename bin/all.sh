@@ -1,0 +1,12 @@
+#!/bin/bash
+
+function cd() {
+  builtin cd $1
+
+  if [ -r "$PWD/.env" ]; then
+    source "$PWD/.env"
+  fi
+}
+
+. bin/getIP.sh
+. bin/regServer.sh
