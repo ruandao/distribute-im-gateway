@@ -7,7 +7,7 @@ timeout=1200
 interval=1
 elapsed=0
 fileSize() {
-  ls -al "$1" 2>/dev/null | awk '{print $5}' || echo 0
+  echo `ls -al "$1" 2>/dev/null | awk '{print $5}' || echo 0`
 }
 
 while [ $(fileSize $FILE) -le 10 ]; do
@@ -34,3 +34,4 @@ echo "文件已超过10字节,大小为 $(fileSize $FILE) 字节"
 cat "$FILE"
 TOKEN=`cat "$FILE" | grep "WORKER_TOKEN" | awk -F'"' '{print $4}'`
 docker swarm join --token $TOKEN __MANAGER_IP__:2377
+

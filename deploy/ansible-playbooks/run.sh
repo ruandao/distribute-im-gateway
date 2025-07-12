@@ -3,6 +3,4 @@
 . bin/all.sh
 
 cd deploy/ansible-playbooks
-
-# regServer http://localhost:2379 aaa bbb
-# ansible-playbook playbook.yml -v
+ansible-playbook playbook.yml

@@ -1,20 +1,20 @@
-resource "aws_instance" "db" {
+resource "aws_instance" "auth" {
     ami               =  var.ami
     availability_zone = "${var.region}a"
     key_name          = "terraform-aws"
     depends_on        = [aws_instance.swarm_manager]
-    subnet_id         = aws_subnet.subnet.id
-    security_groups   = [aws_security_group.sg.id]  # 直接关联安全组
+    subnet_id           = aws_subnet.subnet.id
+    security_groups     = [aws_security_group.sg.id]  # 直接关联安全组
 
 
     instance_type     = "t3.micro"
     tags = {
-        Name       = "swarm-db"
-        NodeType   = "db"  # Terraform 标签
+        Name       = "swarm-auth"
+        NodeType   = "auth"  # Terraform 标签
     }
 
     user_data = templatefile("tpl/user_data_worker_create.tpl", {
-        NodeType    = "db"
+        NodeType    = "auth"
         Swarm_Manager_ID = aws_instance.swarm_manager.id
         MANAGER_IP = aws_instance.swarm_manager.private_ip
     })
@@ -43,39 +43,36 @@ resource "aws_instance" "db" {
 }
 
 
-
-output "dbSerPublicIP" {
-  depends_on = [ aws_instance.db ]
+output "authSerPublicIP" {
+  depends_on = [ aws_instance.auth ]
   value = join("\n", [
-    "[dbSer]",
-    aws_instance.db.public_ip,    
+    "[authSer]",
+    aws_instance.auth.public_ip,    
     "",
   ])
   description = "节点公网IP地址"
 }
 
-
-
-resource "null_resource" "dbSerENVInit" {
-  depends_on = [ aws_instance.db ]
+resource "null_resource" "authSerENVInit" {
+  depends_on = [ aws_instance.auth ]
   provisioner "local-exec" {
     command = <<EOT
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/allNodes.ini
-${aws_instance.db.public_ip}
+${aws_instance.auth.public_ip}
 EOF
 
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/swarm_worker.ini
-${aws_instance.db.public_ip}
+${aws_instance.auth.public_ip}
 EOF
 
-cat << EOF >> ${path.module}/../ansible-playbooks/inventory/biz_db.ini
-${aws_instance.db.public_ip}
+cat << EOF >> ${path.module}/../ansible-playbooks/inventory/biz_auth.ini
+${aws_instance.auth.public_ip}
 EOF
 
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/awsenv.ini
-[dbSer]
-${aws_instance.db.public_ip}
-[dbSer:vars]
+[authSer]
+${aws_instance.auth.public_ip}
+[authSer:vars]
 ansible_user=ec2-user
 ansible_ssh_private_key_file=~/.ssh/terraform-aws
 
@@ -84,13 +81,13 @@ EOT
   }
 }
 
-resource "null_resource" "dbSerSSHConfig" {
-  depends_on = [ aws_instance.db ]
+resource "null_resource" "authSerSSHConfig" {
+  depends_on = [ aws_instance.auth ]
   provisioner "local-exec" {
     command = <<EOT
     cat << 'EOF' >> ${path.module}/../_ssh/config
-Host dbSer
-${format("Hostname %s", aws_instance.db.public_ip)}
+Host authSer
+${format("Hostname %s", aws_instance.auth.public_ip)}
 User ec2-user
 IdentityFile ~/.ssh/terraform-aws
 
