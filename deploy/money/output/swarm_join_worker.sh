@@ -26,9 +26,9 @@ done
 
 TOKEN=`cat $FILE | grep "WORKER_TOKEN" | awk -F'"' '{print $4}'`
 kill -9 $(lsof -ti:2377)
-ssh  -N -f -L 2377:localhost:2377 mSer -F ../../_ssh/config
 echo $TOKEN
+ManagerIP=$(grep -A1 mSer ../../_ssh/config | grep Hostname | awk '{print $2}')
 docker swarm leave --force
-docker swarm join --token $TOKEN localhost:2377 # 由于要加入成为管理节点的话,需要各种其他管理节点也能够连接到本机,处理起来比较麻烦,但是如果只是运行prometheus 的话,那么压力就小很多
-docker node update --label-add node-type=monitor $hostname
+docker swarm join --token $TOKEN $ManagerIP:2377 # 由于要加入成为管理节点的话,需要各种其他管理节点也能够连接到本机,处理起来比较麻烦,但是如果只是运行prometheus 的话,那么压力就小很多
+docker node update --label-add node-type=monitor cpu
 docker info 2>&1 | grep Swarm
