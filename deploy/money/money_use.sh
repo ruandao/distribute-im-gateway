@@ -7,7 +7,6 @@ terraform init
 echo "资源创建中..."
 terraform apply -auto-approve
 echo "资源创建完成"
-ansible-playbook ../ansible-playbooks/playbook.yml
 
 cleanup() {
     echo "资源清理"
