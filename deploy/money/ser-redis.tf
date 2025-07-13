@@ -75,6 +75,7 @@ ${aws_instance.redis.public_ip}
 [redisSer:vars]
 ansible_user=ec2-user
 ansible_ssh_private_key_file=~/.ssh/terraform-aws
+node_type=biz_redis
 
 EOF
 EOT

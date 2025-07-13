@@ -75,6 +75,7 @@ ${aws_instance.auth.public_ip}
 [authSer:vars]
 ansible_user=ec2-user
 ansible_ssh_private_key_file=~/.ssh/terraform-aws
+node_type=biz_auth
 
 EOF
 EOT

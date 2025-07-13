@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 . bin/all.sh
 
 # if need_build_img ruandao/im-auth:latest src/Auth pkg ;then

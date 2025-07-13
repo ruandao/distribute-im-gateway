@@ -1,3 +1,21 @@
+- name: 为各个组的机器打标签
+  shell: >
+    {% for host in groups[item] %}
+      echo {{ host }}-{{ hostvars[host]['node_type'] }} >> nodeVars
+      docker node update --label-add node-type={{ hostvars[host]['node_type'] }} {{ host }}
+    {% endfor %}
+  loop:
+    - biz_db
+    - biz_redis
+    - biz_auth
+  register: label_result
+  failed_when: false
+
+- name: 显示打标签结果
+  debug:
+    msg: "为节点 {{ hostvars[item.item.0].inventory_hostname }} 添加标签 {{ item.item.1.key }}={{ item.item.1.value }} 的结果: {{ item.stdout }}"
+  loop: "{{ label_result.results }}"
+  when: item.skipped is not defined
 
 - name: 获取所有节点信息
   shell: docker node ls --format '{{ "{{" }}.ID {{ "}}" }}'
@@ -6,9 +24,7 @@
 
 - name: 检查每个节点的标签
   shell: |
-    docker node inspect \
-      --format='{{ "{{" }}.ID {{ "}}" }} {{ "{{" }}.Description.Hostname {{ "}}" }} {{ "{{" }}.Spec.Labels {{ "}}" }}' \
-      {{ item }}
+    docker node inspect --format='{{ "{{" }}.ID {{ "}}" }} {{ "{{" }}.Description.Hostname {{ "}}" }} {{ "{{" }}.Spec.Labels {{ "}}" }}' {{ item }}
   loop: "{{ node_ids.stdout_lines }}"
   register: node_labels
   changed_when: false
@@ -19,4 +35,4 @@
       节点 ID: {{ item.stdout.split()[0] }}
       主机名: {{ item.stdout.split()[1] }}
       标签: {{ item.stdout.split()[2:] | join(' ') | replace('map[', '') | replace(']', '') }}
-  loop: "{{ node_labels.results }}"    
+  loop: "{{ node_labels.results }}"

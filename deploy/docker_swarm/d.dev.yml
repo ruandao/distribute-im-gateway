@@ -2,6 +2,9 @@ services:
   mysql-test:
     deploy:
       mode: global # 仅在 manager 节点运行 1 个实例
+      placement:
+        constraints:
+          - node.labels.node-type == biz_db
     volumes:
       - ~/distribute-im-gateway/deploy/data/mysql/volumes:/var/lib/mysql
       - ~/distribute-im-gateway/deploy/data/mysql/my.cnf:/etc/mysql/my.cnf

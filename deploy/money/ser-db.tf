@@ -78,6 +78,7 @@ ${aws_instance.db.public_ip}
 [dbSer:vars]
 ansible_user=ec2-user
 ansible_ssh_private_key_file=~/.ssh/terraform-aws
+node_type=biz_db
 
 EOF
 EOT

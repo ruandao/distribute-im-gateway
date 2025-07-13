@@ -73,6 +73,7 @@ ${aws_instance.swarm_manager.public_ip}
 [mSer:vars]
 ansible_user=ec2-user
 ansible_ssh_private_key_file=~/.ssh/terraform-aws
+node_type=biz_manager
 
 EOF
 

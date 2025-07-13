@@ -25,6 +25,7 @@ resource "local_file" "cleanSwarmManagerENVInit" {
 [swarm_manager:vars]
 ansible_user=ec2-user
 ansible_ssh_private_key_file=~/.ssh/terraform-aws  
+node_type=manager
 [swarm_manager]
 EOF
 }
@@ -43,6 +44,7 @@ resource "local_file" "cleanBIZ_DBENVInit" {
 [biz_db:vars]
 ansible_user=ec2-user
 ansible_ssh_private_key_file=~/.ssh/terraform-aws  
+node_type=biz_db
 [biz_db]
 EOF
 }
@@ -52,6 +54,7 @@ resource "local_file" "cleanBIZ_RedisENVInit" {
 [biz_redis:vars]
 ansible_user=ec2-user
 ansible_ssh_private_key_file=~/.ssh/terraform-aws  
+node_type=biz_redis
 [biz_redis]
 EOF
 }
@@ -61,6 +64,7 @@ resource "local_file" "cleanBIZ_AuthENVInit" {
 [biz_auth:vars]
 ansible_user=ec2-user
 ansible_ssh_private_key_file=~/.ssh/terraform-aws  
+node_type=biz_auth
 [biz_auth]
 EOF
 }

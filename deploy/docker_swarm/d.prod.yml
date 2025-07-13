@@ -4,7 +4,7 @@ services:
       mode: global # 仅在 manager 节点运行 1 个实例
       placement:
         constraints:
-          - node.labels.node-type == db
+          - node.labels.node-type == biz_db
     volumes:
       - type: bind
         source: ./data/mysql/volumes # 主机上的配置文件路径
