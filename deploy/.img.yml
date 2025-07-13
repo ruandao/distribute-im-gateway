@@ -1,3 +1,4 @@
+
 services:
   prometheus-test:
     image: prom/prometheus:v2.47.0
@@ -9,8 +10,7 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
     restart: always
-    volumes:
-      - ./data/monitor/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
   grafana-test:
     image: grafana/grafana:10.1.5
     ports:
@@ -22,19 +22,17 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
     restart: always
-    volumes:
-      - ./data/monitor/grafana/volumes:/var/lib/grafana
+    
   redis-test:
-    image: redis:7.2-alpine
+    image: redis:7.2-alpine  # 使用官方 Redis 镜像
     ports:
       - mode: ingress
         target: 6379
         published: 6379
         protocol: tcp
-    command: redis-server --appendonly yes
-    restart: always
-    volumes:
-      - ./data/redis/volumes:/data
+    command: redis-server --appendonly yes  # 启用 AOF 持久化
+    restart: always  # 容器自动重启
+
   mysql-test:
     image: registry.cn-hangzhou.aliyuncs.com/bigdata_cloudnative/mysql-test:5.7
     restart: always
@@ -47,21 +45,17 @@ services:
         target: 3306
         published: 3306
         protocol: tcp
-    command: >-
-      --max_connections=1000 --character-set-server=utf8mb4
+    command:
+      --max_connections=1000
+      --character-set-server=utf8mb4
       --collation-server=utf8mb4_general_ci
       --default-authentication-plugin=mysql_native_password
     healthcheck:
-      test:
-        - CMD-SHELL
-        - curl --silent localhost:3306 >/dev/null || exit 1
+      test: ["CMD-SHELL", "curl --silent localhost:3306 >/dev/null || exit 1"]
       interval: 10s
       timeout: 10s
       retries: 3
-    volumes:
-      - ./data/mysql/volumes:/var/lib/mysql
-      - ./data/mysql/my.cnf:/etc/mysql/my.cnf
-      - ./data/mysql/initSql:/docker-entrypoint-initdb.d
+
   mysqld-exporter:
     image: prom/mysqld-exporter
     hostname: mysqld-exporter
@@ -71,8 +65,7 @@ services:
         published: 9104
         protocol: tcp
     restart: always
-    volumes:
-      - ./data/monitor/mysql/user_my.cnf:/.my.cnf
+
   etcdService:
     image: bitnami/etcd:3.6.1
     ports:
@@ -85,7 +78,49 @@ services:
         published: 2380
         protocol: tcp
     environment:
+      # 允许无认证启动
       - ALLOW_NONE_AUTHENTICATION=yes
+      # 向客户端通告的URL
       - ETCD_ADVERTISE_CLIENT_URLS=http://0.0.0.0:2379
-      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      # 监听客户端连接的地址
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379 
+    # 添加重启策略
     restart: always
+    # networks:
+    #   - app_network
+    # command: >
+    #   sh -c "
+    #     sleep 5 &&
+    #     # 从文件导入所有键值对
+    #     etcdctl --endpoints=http://localhost:2379 put '/service/comet/v1.0.0/config' '{\"TrafficTags\":[\"default\"],\"DepServices\":[\"auth\"]}' &&
+    #     etcdctl --endpoints=http://localhost:2379 put '/service/auth/v1.0.0/config' '{\"TrafficTags\":[\"default\"],\"DepServices\":[\"\"]}' &&
+    #     /opt/bitnami/scripts/etcd/run.sh
+    #   "
+
+  auth:
+    build:
+      context: ..
+      dockerfile: ./src/Auth/Dockerfile  # 指定自定义Dockerfile文件名
+    ports:
+      - "8080:8080"
+    depends_on:
+      - etcdService
+    restart: always
+    networks:
+      - default
+
+  # comet:
+  #   build:
+  #     context: ..
+  #     dockerfile: ./src/Comet/Dockerfile  # 指定自定义Dockerfile文件名
+  #   ports:
+  #     - "8181:8181"
+  #   depends_on:
+  #     - etcdService
+  #   restart: always
+  #   networks:
+  #     - default
+
+# networks:
+#   app_network:
+#     driver: bridge

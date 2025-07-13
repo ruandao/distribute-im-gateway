@@ -20,6 +20,7 @@
     dest: ~/distribute-im-gateway
     clone: no
     update: yes
+    force: yes  # 强制覆盖本地修改，确保更新成功
   when: repo_status.stat.exists  
 
 - name: Change to Currently branch

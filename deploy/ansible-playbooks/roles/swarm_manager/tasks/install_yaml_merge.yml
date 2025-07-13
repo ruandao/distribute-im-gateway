@@ -1,0 +1,32 @@
+
+- name: 安装依赖的 nodejs, npx, yarn
+  shell: |
+    curl -sL https://rpm.nodesource.com/setup_18.x | bash -
+    yum install -y nodejs
+
+    # 验证安装
+    node --version
+    npm --version
+
+    # 安装Yarn
+    npm install -g yarn
+
+    # 验证npx和Yarn安装
+    yarn --version
+    npx --version
+    
+  register: npx
+  changed_when: false
+
+- name: 安装 @alexlafroscia/yaml-merge
+  shell: |
+    npm install -g @alexlafroscia/yaml-merge
+    yaml-merge --help
+  register: yaml_merge
+  changed_when: false  
+
+- name: 显示版本信息
+  debug:
+    msg: |
+      yaml_merge: {{ yaml_merge.stdout_lines[1] }}
+    

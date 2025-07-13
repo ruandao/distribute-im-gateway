@@ -13,6 +13,7 @@ systemctl enable docker.service
 systemctl start docker.service
 
 
+
 echo "Instance IP: $InstanceIP $NODE_TYPE"
 docker info | grep Swarm
 docker swarm init --advertise-addr $InstanceIP

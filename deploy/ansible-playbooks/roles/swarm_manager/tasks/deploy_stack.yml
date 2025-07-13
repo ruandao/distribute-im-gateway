@@ -1,0 +1,11 @@
+
+- name: 部署 Docker Stack
+  shell: |
+    cd ~/distribute-im-gateway/deploy
+    npx @alexlafroscia/yaml-merge .img.yml d.prod.yml > docker-compose.yml
+    docker stack deploy -c docker-compose.yml im
+  register: deploy_result
+
+- name: 显示部署结果
+  debug:
+    var: deploy_result.stdout_lines    

@@ -1,33 +1,25 @@
 - hosts: allNodes
-  # gather_facts: yes
-  vars:
-    # 关键参数：
-    ansible_ssh_common_args: '-o ServerAliveInterval=30 -o ServerAliveCountMax=10'
-    # 延长超时时间：
-    ansible_ssh_connect_timeout: 60
-    ansible_timeout: 120
-  roles:
-    - role: allNodes
+  tasks:
+    - name: 拉取最新代码
+      ansible.builtin.include_tasks: roles/allNodes/tasks/clone_latest_code.yml
 
 - hosts: swarm_manager
-  # gather_facts: yes
-  become: yes
-  vars:
-    # 关键参数：
-    ansible_ssh_common_args: '-o ServerAliveInterval=30 -o ServerAliveCountMax=10'
-    # 延长超时时间：
-    ansible_ssh_connect_timeout: 60
-    ansible_timeout: 120
-  roles:
-    - role: swarm_manager
+  become: true
+  tasks:
+    - name: 安装依赖 yaml_merge
+      ansible.builtin.include_tasks: roles/swarm_manager/tasks/install_yaml_merge.yml            
+    
+- hosts: swarm_manager
+  tasks:
+    - name: 生成 worker token
+      ansible.builtin.include_tasks: roles/swarm_manager/tasks/gen_swarm_worker_token.yml
 - hosts: swarm_worker
-  # gather_facts: yes
-  become: yes
-  vars:
-    # 关键参数：
-    ansible_ssh_common_args: '-o ServerAliveInterval=30 -o ServerAliveCountMax=10'
-    # 延长超时时间：
-    ansible_ssh_connect_timeout: 60
-    ansible_timeout: 120
-  roles:
-    - role: swarm_worker
+  tasks:
+    - name: 加入成为 worker
+      ansible.builtin.include_tasks: roles/swarm_worker/tasks/swarm_join.yml
+- hosts: swarm_manager
+  tasks:
+    - name: 显示节点标签
+      ansible.builtin.include_tasks: roles/swarm_manager/tasks/show_node_labels.yml
+    - name: 部署 stack
+      ansible.builtin.include_tasks: roles/swarm_manager/tasks/deploy_stack.yml

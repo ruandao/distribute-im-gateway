@@ -1,0 +1,22 @@
+
+- name: 获取所有节点信息
+  shell: docker node ls --format '{{ "{{" }}.ID {{ "}}" }}'
+  register: node_ids
+  changed_when: false
+
+- name: 检查每个节点的标签
+  shell: |
+    docker node inspect \
+      --format='{{ "{{" }}.ID {{ "}}" }} {{ "{{" }}.Description.Hostname {{ "}}" }} {{ "{{" }}.Spec.Labels {{ "}}" }}' \
+      {{ item }}
+  loop: "{{ node_ids.stdout_lines }}"
+  register: node_labels
+  changed_when: false
+
+- name: 格式化并显示节点标签
+  debug:
+    msg: |
+      节点 ID: {{ item.stdout.split()[0] }}
+      主机名: {{ item.stdout.split()[1] }}
+      标签: {{ item.stdout.split()[2:] | join(' ') | replace('map[', '') | replace(']', '') }}
+  loop: "{{ node_labels.results }}"    

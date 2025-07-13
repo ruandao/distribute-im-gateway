@@ -1,0 +1,27 @@
+
+- name: 安装依赖的 nodejs, npx, yarn
+  shell: |
+    curl -sL https://rpm.nodesource.com/setup_18.x | bash -
+    yum install -y nodejs
+
+    # 验证安装
+    node --version
+    npm --version
+
+    # 安装Yarn
+    npm install -g yarn
+
+    # 验证npx和Yarn安装
+    yarn --version
+    npx --version
+    
+  register: npx
+  changed_when: false
+
+- name: 显示版本信息
+  debug:
+    msg: |
+      Node.js: {{ node_versions.stdout_lines[0] }}
+      npm: {{ node_versions.stdout_lines[1] }}
+      npx: {{ node_versions.stdout_lines[2] }}
+    
