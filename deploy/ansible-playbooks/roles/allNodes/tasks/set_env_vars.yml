@@ -1,0 +1,17 @@
+- name: 创建环境变量配置文件
+  template:
+    src: env_vars.j2
+    dest: /etc/profile.d/custom_env.sh
+    mode: "0644"
+  # notify: 刷新环境变量
+  become: true
+  vars:
+    # 定义要设置的环境变量，可根据需要修改
+    environment_variables:
+      ENV: prod
+
+- name: 刷新环境变量
+  shell: source /etc/profile.d/custom_env.sh
+  # args:
+  #   executable: /bin/bash
+  # listen: 刷新环境变量

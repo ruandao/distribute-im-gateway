@@ -19,6 +19,6 @@ docker stack rm --detach=false im
 rm -rf ~/distribute-im-gateway/deploy/data/mysql/volumes
 mkdir ~/distribute-im-gateway/deploy/data/mysql/volumes
 # sleep 3
-docker stack deploy --detach=false -c docker-compose.yml im
+docker stack deploy -c docker-compose.yml im
 
 # docker service logs im_mysql-test

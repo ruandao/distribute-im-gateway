@@ -1,0 +1,5 @@
+# Ansible managed
+
+{% for key, value in environment_variables.items() %}
+export {{ key }}="{{ value }}"
+{% endfor %}

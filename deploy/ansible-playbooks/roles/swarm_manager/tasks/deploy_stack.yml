@@ -1,6 +1,7 @@
 - name: 部署 Docker Stack
   shell: |
     cd ~/distribute-im-gateway
+    cat deploy/docker_swarm/docker-compose.yml
     bash deploy/docker_swarm/run.sh
   register: deploy_result
 
