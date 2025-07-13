@@ -1,19 +1,22 @@
-
 services:
-  prometheus-test:
-    volumes:
-      - ./data/monitor/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-  grafana-test:
-    volumes:
-      - ./data/monitor/grafana/volumes:/var/lib/grafana
-  redis-test:
-    volumes:
-      - ./data/redis/volumes:/data  # 持久化存储数据
   mysql-test:
+    deploy:
+      mode: global # 仅在 manager 节点运行 1 个实例
     volumes:
-      - ./data/mysql/volumes:/var/lib/mysql
-      - ./data/mysql/my.cnf:/etc/mysql/my.cnf
-      - ./data/mysql/initSql:/docker-entrypoint-initdb.d
-  mysqld-exporter:
-    volumes:
-      - ./data/monitor/mysql/user_my.cnf:/.my.cnf
+      - ~/distribute-im-gateway/deploy/data/mysql/volumes:/var/lib/mysql
+      - ~/distribute-im-gateway/deploy/data/mysql/my.cnf:/etc/mysql/my.cnf
+      - ~/distribute-im-gateway/deploy/data/mysql/initSql:/docker-entrypoint-initdb.d
+
+  # prometheus-test:
+  #   volumes:
+  #     - ./data/monitor/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  # grafana-test:
+  #   volumes:
+  #     - ./data/monitor/grafana/volumes:/var/lib/grafana
+  # redis-test:
+  #   volumes:
+  #     - ./data/redis/volumes:/data  # 持久化存储数据
+
+  # mysqld-exporter:
+  #   volumes:
+  #     - ./data/monitor/mysql/user_my.cnf:/.my.cnf
