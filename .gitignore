@@ -81,4 +81,5 @@ deploy/_ssh/config
 deploy/_ssh/terraform-aws
 deploy/money/output/ssh_error.log
 deploy/money/output/swarm_token.json
-
+deploy/docker_swarm/docker-compose.yml
+tmp.json

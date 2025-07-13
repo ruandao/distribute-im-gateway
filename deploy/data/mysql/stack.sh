@@ -3,12 +3,9 @@
 . bin/all.sh
 
 cd deploy
-docker-compose -f .img.yml -f d.${ENV}.yml config > docker-compose.yml
+npx @alexlafroscia/yaml-merge .img.yml d.${ENV}.yml  > docker-compose.yml
+
 echo "${ENV}"
-
-
-
-docker-compose pull mysql-test
 
 # 定义要操作的目录路径
 directory="data/mysql/volumes"
@@ -22,17 +19,10 @@ else
     echo "目录 $directory 不存在。"
 fi
 
-# 删除对应容器
-docker rm -f mysql-test
-
 # 创建目录
 # 创建目录
 echo "创建目录 $directory ..."
 mkdir -p "$directory"
 echo "目录 $directory 创建成功。"
 
-
-docker-compose up -d mysql-test
-
-sleep 10
-docker logs mysql-test
+docker stack deploy -c docker-compose.yml im

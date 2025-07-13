@@ -2,7 +2,13 @@
 set -x
 export NODE_TYPE="${ NodeType }"
 export InstanceIP="${ InstanceIP }"
+
+echo << EOT >> /home/ec2-user/.bashrc
+export NODE_TYPE="${ NodeType }"
+export InstanceIP="${ InstanceIP }"
 export ENV=prod
+
+EOT
 
 yum update -y
 yum install -y docker git
