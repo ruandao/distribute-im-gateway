@@ -15,7 +15,7 @@ yaml-merge .img.yml d.${ENV}.yml > docker-compose.yml
 # docker buildx imagetools inspect mysql:8.4
 
 
-docker stack rm --detach=false im
+docker stack rm im
 # 清理 mysql 数据
 rm -rf ~/distribute-im-gateway/deploy/data/mysql/volumes
 mkdir ~/distribute-im-gateway/deploy/data/mysql/volumes

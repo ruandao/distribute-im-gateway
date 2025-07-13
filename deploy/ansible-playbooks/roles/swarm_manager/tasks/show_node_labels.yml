@@ -11,12 +11,6 @@
   register: label_result
   failed_when: false
 
-- name: 显示打标签结果
-  debug:
-    msg: "为节点 {{ hostvars[item.item.0].inventory_hostname }} 添加标签 {{ item.item.1.key }}={{ item.item.1.value }} 的结果: {{ item.stdout }}"
-  loop: "{{ label_result.results }}"
-  when: item.skipped is not defined
-
 - name: 获取所有节点信息
   shell: docker node ls --format '{{ "{{" }}.ID {{ "}}" }}'
   register: node_ids
