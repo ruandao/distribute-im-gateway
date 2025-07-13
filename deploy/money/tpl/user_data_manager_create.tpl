@@ -3,7 +3,7 @@ set -x
 export NODE_TYPE="${ NodeType }"
 export InstanceIP="${ InstanceIP }"
 
-echo << EOT >> /home/ec2-user/.bashrc
+echo << EOT >> /etc/bashrc
 export NODE_TYPE="${ NodeType }"
 export InstanceIP="${ InstanceIP }"
 export ENV=prod
