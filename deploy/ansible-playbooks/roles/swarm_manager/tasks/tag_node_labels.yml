@@ -1,0 +1,16 @@
+- name: 为各个组的机器打标签
+  shell: >
+    {% for host in groups[item] %}
+      echo {{ host }}-{{ hostvars[host]['node_type'] }} >> nodeVars
+      docker node update --label-add node-type={{ hostvars[host]['node_type'] }} {{ host }}
+    {% endfor %}
+  loop:
+    - biz_db
+    - biz_redis
+    - biz_auth
+  register: label_result
+  failed_when: false
+
+- name: 输出标签结果
+  debug:
+    var: label_result.stdout_lines

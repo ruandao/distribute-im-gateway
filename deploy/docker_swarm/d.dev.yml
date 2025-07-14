@@ -2,6 +2,7 @@ services:
   mysql-test:
     deploy:
       mode: global # 仅在 manager 节点运行 1 个实例
+      replicas: 1
       placement:
         constraints:
           - node.labels.node-type == biz_db
