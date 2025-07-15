@@ -5,7 +5,7 @@
 
 - name: 检查每个节点的标签
   shell: |
-    A="{{" B="}}" docker node inspect --format="$A .ID $B $A .Description.Hostname $B $A .Spec.Labels $B" {{ item }}
+    A="\{\{" B="\}\}" docker node inspect --format="$A .ID $B $A .Description.Hostname $B $A .Spec.Labels $B" {{ item }}
   loop: "{{ node_ids.stdout_lines }}"
   register: node_labels
   changed_when: false

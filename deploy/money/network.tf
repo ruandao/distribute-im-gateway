@@ -15,7 +15,7 @@ resource "local_file" "cleanAllNodesENVInit" {
   content = <<EOF
 [allNodes:vars]
 ansible_user=ec2-user
-ansible_ssh_private_key_file=~/.ssh/terraform-aws  
+ansible_ssh_private_key_file=~/distribute-im-gateway/deploy/_ssh/terraform-aws
 [allNodes]
 EOF
 }
@@ -24,7 +24,7 @@ resource "local_file" "cleanSwarmManagerENVInit" {
   content = <<EOF
 [swarm_manager:vars]
 ansible_user=ec2-user
-ansible_ssh_private_key_file=~/.ssh/terraform-aws  
+ansible_ssh_private_key_file=~/distribute-im-gateway/deploy/_ssh/terraform-aws
 node_type=manager
 [swarm_manager]
 EOF
@@ -34,7 +34,7 @@ resource "local_file" "cleanSwarmWorkerENVInit" {
   content = <<EOF
 [swarm_worker:vars]
 ansible_user=ec2-user
-ansible_ssh_private_key_file=~/.ssh/terraform-aws  
+ansible_ssh_private_key_file=~/distribute-im-gateway/deploy/_ssh/terraform-aws
 [swarm_worker]
 EOF
 }
@@ -43,7 +43,7 @@ resource "local_file" "cleanBIZ_DBENVInit" {
   content = <<EOF
 [biz_db:vars]
 ansible_user=ec2-user
-ansible_ssh_private_key_file=~/.ssh/terraform-aws  
+ansible_ssh_private_key_file=~/distribute-im-gateway/deploy/_ssh/terraform-aws
 node_type=biz_db
 [biz_db]
 EOF
@@ -53,7 +53,7 @@ resource "local_file" "cleanBIZ_RedisENVInit" {
   content = <<EOF
 [biz_redis:vars]
 ansible_user=ec2-user
-ansible_ssh_private_key_file=~/.ssh/terraform-aws  
+ansible_ssh_private_key_file=~/distribute-im-gateway/deploy/_ssh/terraform-aws
 node_type=biz_redis
 [biz_redis]
 EOF
@@ -63,7 +63,7 @@ resource "local_file" "cleanBIZ_AuthENVInit" {
   content = <<EOF
 [biz_auth:vars]
 ansible_user=ec2-user
-ansible_ssh_private_key_file=~/.ssh/terraform-aws  
+ansible_ssh_private_key_file=~/distribute-im-gateway/deploy/_ssh/terraform-aws
 node_type=biz_auth
 [biz_auth]
 EOF
