@@ -2,7 +2,7 @@
   shell: |
     cd ~/distribute-im-gateway
     bash deploy/docker_swarm/genDockerCompose.sh
-    ls -al deploy/docker_swarm/ 1>&2
+    ls -al deploy/docker_swarm/
     cat deploy/docker_swarm/docker-compose.yml
   register: docker_compose
 
@@ -13,6 +13,7 @@
 - name: 部署 Docker Stack
   shell: |
     cd ~/distribute-im-gateway
+    ls -al deploy/docker_swarm/
     bash deploy/docker_swarm/runDockerStack.sh
   register: deploy_result
 
