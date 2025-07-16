@@ -11,7 +11,7 @@ export ENV=prod
 EOT
 
 yum update -y
-yum install -y docker git
+yum install -y docker git ansible screen
 usermod -a -G docker ec2-user
 id ec2-user
 newgrp docker

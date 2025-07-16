@@ -49,7 +49,8 @@ output "mSerPublicIP" {
   depends_on = [ aws_instance.swarm_manager ]
   value = join("\n", [
     "[mSer]",
-    aws_instance.swarm_manager.public_ip,    
+    aws_instance.swarm_manager.public_ip,
+    aws_instance.swarm_manager.private_ip,
     "",
   ])
   description = "节点公网IP地址"

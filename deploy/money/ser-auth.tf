@@ -47,7 +47,8 @@ output "authSerPublicIP" {
   depends_on = [ aws_instance.auth ]
   value = join("\n", [
     "[authSer]",
-    aws_instance.auth.public_ip,    
+    aws_instance.auth.public_ip,
+    aws_instance.auth.private_ip,
     "",
   ])
   description = "节点公网IP地址"

@@ -48,7 +48,8 @@ output "dbSerPublicIP" {
   depends_on = [ aws_instance.db ]
   value = join("\n", [
     "[dbSer]",
-    aws_instance.db.public_ip,    
+    aws_instance.db.public_ip,
+    aws_instance.db.private_ip,
     "",
   ])
   description = "节点公网IP地址"

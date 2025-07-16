@@ -1,24 +1,15 @@
-- hosts: allNodes
+- hosts: swarm_worker
   tasks:
     - name: 拉取最新代码
       ansible.builtin.include_tasks: roles/allNodes/tasks/clone_latest_code.yml
     - name: 设置环境变量
       ansible.builtin.include_tasks: roles/allNodes/tasks/set_env_vars.yml
 
-- hosts: swarm_manager
-  become: true
-  tasks:
-    - name: 安装依赖 yaml_merge
-      ansible.builtin.include_tasks: roles/swarm_manager/tasks/install_yaml_merge.yml
-
-- hosts: swarm_manager
-  tasks:
-    - name: 生成 worker token
-      ansible.builtin.include_tasks: roles/swarm_manager/tasks/gen_swarm_worker_token.yml
 - hosts: swarm_worker
   tasks:
     - name: 加入成为 worker
       ansible.builtin.include_tasks: roles/swarm_worker/tasks/swarm_join.yml
+
 - hosts: swarm_manager
   tasks:
     - name: 给节点打标签

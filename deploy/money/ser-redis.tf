@@ -47,7 +47,8 @@ output "redisSerPublicIP" {
   depends_on = [ aws_instance.redis ]
   value = join("\n", [
     "[redisSer]",
-    aws_instance.redis.public_ip,    
+    aws_instance.redis.public_ip,
+    aws_instance.redis.private_ip,
     "",
   ])
   description = "节点公网IP地址"
