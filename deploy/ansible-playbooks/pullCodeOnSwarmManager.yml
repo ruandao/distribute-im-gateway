@@ -11,8 +11,5 @@
     - name: 安装依赖 yaml_merge
       ansible.builtin.include_tasks: roles/swarm_manager/tasks/install_yaml_merge.yml
 
-- hosts: swarm_manager
-  tasks:
-    - name: 生成 worker token
-      ansible.builtin.include_tasks: roles/swarm_manager/tasks/gen_swarm_worker_token.yml
+
 

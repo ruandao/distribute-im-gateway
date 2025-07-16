@@ -5,6 +5,11 @@
     - name: 设置环境变量
       ansible.builtin.include_tasks: roles/allNodes/tasks/set_env_vars.yml
 
+- hosts: swarm_manager
+  tasks:
+    - name: 生成 worker token
+      ansible.builtin.include_tasks: roles/swarm_manager/tasks/gen_swarm_worker_token.yml
+
 - hosts: swarm_worker
   tasks:
     - name: 加入成为 worker

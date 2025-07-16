@@ -1,5 +1,6 @@
 #!/bin/bash
 # -*- coding: utf-8 -*-
+# 拷贝主机清单和ssh 配置文件到服务端
 set -x
 pwd
 . bin/all.sh
