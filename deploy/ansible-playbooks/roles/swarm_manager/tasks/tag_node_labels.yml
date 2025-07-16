@@ -1,8 +1,11 @@
 - name: 为各个组的机器打标签
   shell: >
-    {% for host in groups[item] %}
-      echo {{ host }}-{{ hostvars[host]['node_type'] }} >> nodeVars
-      docker node update --label-add node-type={{ hostvars[host]['node_type'] }} {{ host }}
+    set -x
+    # item 是 loop 中的每一个选项,就是说,对于 loop 列表,每个选项都会执行一遍这个脚本
+    {% for ip in groups[item] %}
+      echo {{ ip }}-{{ hostvars[ip]['node_type'] }} >> nodeVars
+      NodeID=`docker node ls -q | A="{{ {{ }}" B="{{ }} }}" xargs -I {} docker node inspect {} -f '$A .ID $B $A .Status.Addr $B' | grep "{{ ip }}" | awk '{print $1}'`
+      docker node update --label-add node-type={{ hostvars[ip]['node_type'] }} $NodeID
     {% endfor %}
   loop:
     - biz_db
