@@ -3,9 +3,10 @@
     set -x
     # item 是 loop 中的每一个选项,就是说,对于 loop 列表,每个选项都会执行一遍这个脚本
     {% for ip in groups[item] %}
-      echo {{ ip }}-{{ hostvars[ip]['node_type'] }} >> nodeVars
-      NodeID=`docker node ls -q `
-      
+      echo "{{ ip }}-{{ hostvars[ip]['node_type'] }}" >> nodeVars
+      NodeID=`docker node ls -q | xargs -I {} docker node inspect {} -f '{% raw %} {{.ID}} {{ .Status.Addr }} {% endraw %}' | grep "{{ ip }}" | awk '{print $1}'`
+      NodeType="{{ hostvars[ip]['node_type'] }}"
+      docker node update --label-add node-type=$NodeType $NodeID    
     {% endfor %}
   loop:
     - biz_db
@@ -13,9 +14,10 @@
     - biz_auth
   register: label_result
   failed_when: false
-  # NodeID=`docker node ls -q | xargs -I {} docker node inspect {} -f '{{ .ID }} {{ .Status.Addr }}' | grep "{{ ip }}" | awk '{print $1}'`
-# docker node update --label-add node-type={{ hostvars[ip]['node_type'] }} $NodeID
 
 - name: 输出标签结果
   debug:
-    var: label_result.stdout_lines
+    var: item.stdout_lines
+  loop: "{{ label_result.results }}"
+  loop_control:
+    label: "{{ item.item }}"  # 显示当前处理的组名    
