@@ -3,7 +3,7 @@
   tasks:
     - name: 给节点打标签
       ansible.builtin.include_tasks: roles/swarm_manager/tasks/tag_node_labels.yml
-    - name: 部署 stack
-      ansible.builtin.include_tasks: roles/swarm_manager/tasks/deploy_stack.yml
-    - name: 显示节点标签
-      ansible.builtin.include_tasks: roles/swarm_manager/tasks/show_node_labels.yml
+    # - name: 部署 stack
+    #   ansible.builtin.include_tasks: roles/swarm_manager/tasks/deploy_stack.yml
+    # - name: 显示节点标签
+    #   ansible.builtin.include_tasks: roles/swarm_manager/tasks/show_node_labels.yml

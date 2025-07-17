@@ -79,7 +79,9 @@ __pycache__
 inventory/
 deploy/_ssh/config
 deploy/_ssh/terraform-aws
-deploy/money/output/ssh_error.log
-deploy/money/output/swarm_token.json
+deploy/serAws/output/ssh_error.log
+deploy/serAws/output/swarm_token.json
+deploy/serAli/output/ssh_error.log
+deploy/serAli/output/swarm_token.json
 deploy/docker_swarm/docker-compose.yml
 tmp.json

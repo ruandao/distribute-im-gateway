@@ -1,6 +1,7 @@
 #!/bin/bash
 set -x
-cd deploy/money/output
+# $1 位要创建的服务器供应商的对应目录
+cd $1/output
 
 FILE="./swarm_token.json"
 

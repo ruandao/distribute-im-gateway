@@ -1,5 +1,5 @@
 #!/bin/bash
-cd deploy/money
+cd $1
 
 echo "项目初始化中: ${pwd}"
 terraform init
