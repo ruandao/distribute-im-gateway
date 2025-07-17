@@ -1,4 +1,5 @@
 resource "alicloud_instance" "redis" {
+    count = var.instance_count["redis"]
     instance_name         = "terraform-redis"
     internet_max_bandwidth_out = var.max_bandwidth_out
     system_disk_category  = var.instance_disk_category
@@ -10,13 +11,13 @@ resource "alicloud_instance" "redis" {
 
 
     availability_zone     = var.availability_zone
-    image_id              = var.image_id
+    image_id              = local_file.image_id.content
     instance_type         = var.instance_type_2u4g
 
     # 抢占式配置（从变量传入或使用默认值）
-    instance_charge_type         = var.instance_charge_type
-    spot_strategy                = var.spot_strategy
-    spot_price_limit             = var.spot_price_limit
+    # instance_charge_type         = var.instance_charge_type
+    # spot_strategy                = var.spot_strategy
+    # spot_price_limit             = var.spot_price_limit
 
     tags = {
       Name       = "swarm-redis"
@@ -27,8 +28,8 @@ resource "alicloud_instance" "redis" {
 
     user_data = templatefile("tpl/user_data_worker_create.tpl", {
         NodeType    = "redis"
-        Swarm_Manager_ID = alicloud_instance.swarm_manager.id
-        MANAGER_IP = alicloud_instance.swarm_manager.private_ip
+        Swarm_Manager_ID = alicloud_instance.swarm_manager[0].id
+        MANAGER_IP = alicloud_instance.swarm_manager[0].private_ip
         target_user = var.target_user
         target_user_home = var.target_user_home
     })
@@ -61,11 +62,11 @@ resource "alicloud_instance" "redis" {
 output "redisSerPublicIP" {
   depends_on = [ alicloud_instance.redis ]
   value = join("\n", [
-    "[redisSer]",
-    alicloud_instance.redis.public_ip,
-    alicloud_instance.redis.private_ip,
-    "",
-  ])
+                    "[redisSer]",
+                    join("\n", [for idx, redis in alicloud_instance.redis:  
+                                "${idx}-${redis.public_ip}-${redis.private_ip}"
+                                ])
+                    ])
   description = "节点公网IP地址"
 }
 
@@ -74,20 +75,20 @@ resource "null_resource" "redisSerENVInit" {
   provisioner "local-exec" {
     command = <<EOT
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/allNodes.ini
-${alicloud_instance.redis.public_ip}
+${join("\n", [for redis in alicloud_instance.redis: redis.public_ip])}
 EOF
 
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/swarm_worker.ini
-${alicloud_instance.redis.public_ip}
+${join("\n", [for redis in alicloud_instance.redis: redis.public_ip])}
 EOF
 
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/biz_redis.ini
-${alicloud_instance.redis.public_ip}
+${join("\n", [for redis in alicloud_instance.redis: redis.public_ip])}
 EOF
 
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/awsenv.ini
 [redisSer]
-${alicloud_instance.redis.public_ip}
+${join("\n", [for redis in alicloud_instance.redis: redis.public_ip])}
 [redisSer:vars]
 ansible_user=${var.target_user}
 ansible_ssh_private_key_file=~/.ssh/terraform-aws
@@ -104,11 +105,16 @@ resource "null_resource" "redisSerSSHConfig" {
   provisioner "local-exec" {
     command = <<EOT
     cat << 'EOF' >> ${path.module}/../_ssh/config
-Host redisSer
-${format("Hostname %s", alicloud_instance.redis.public_ip)}
-User ${var.target_user}
-IdentityFile ~/.ssh/terraform-aws
-
+    ${
+    join("\n", [for idx, redis in alicloud_instance.redis: 
+      join("\n", [
+        format("Host redisSer-%s", idx),
+        format("Hostname %s", redis.public_ip),
+        format("User %s", var.target_user),
+        "IdentityFile ~/.ssh/terraform-aws"
+      ])
+    ])
+    }
 EOF
 EOT
   }

@@ -1,23 +1,50 @@
+
+variable "instance_count" {
+  type = map(number)
+  description = "实例数量配置"
+  default = {
+    "swarm_manager" = 0
+    
+    "db" = 0
+    "redis" = 0
+    
+    "auth" = 0
+  }
+}
+
 variable "region" {
   description = "Aliyun Region"
   type        = string
-  default = "cn-hongkong"
+  default = "ap-southeast-1"
 }
 variable "availability_zone" {
   description = "Aliyun Region Zone"
   type        = string
-  default     =  "cn-hongkong-c"  # 可选默认值
+  default     =  "ap-southeast-1b"  # 可选默认值
 }
 
+
+# 镜像配置
 variable "image_id" {
-    description = "Aliyun image id"
+    description = "Aliyun image id 目标镜像名称（检查是否存在或创建）"
     type        = string
-    # CentOS Stream 9 64位
-    # 名称：centos_stream_9_x64_20G_alibase_20250707.vhd
-    # 描述：Kernel version is 5.14.0-592.el9.x86_64, 2025.7.7
-    default = "centos_stream_9_x64_20G_alibase_20250707.vhd" # aws linux
+    default     = "img-0717_2254"
+}
+  
+variable "base_image_id" {
+  description = "创建实例的基础镜像ID"
+  type        = string
+  # default     = "aliyun_3_x64_20G_container_optimized_alibase_20250629.vhd"
+  default     = "ubuntu_24_04_x64_20G_alibase_20250702.vhd"
 }
 
+
+variable "img_instance_type" {
+    description = "镜像实例类型"
+    type        = string
+    # 4U8G ecs.e-c1m2.large 
+    default = "ecs.e-c1m2.large"
+}
 variable "instance_type_2u4g" {
     description = "实例类型"
     type        = string
@@ -34,7 +61,7 @@ variable "instance_disk_category" {
 variable "max_bandwidth_out" {
     description = "最大带宽"
     type        = string
-    default = 1000
+    default = 100
 }
 
 
@@ -53,6 +80,11 @@ variable "target_user_home" {
     description = "用户所在home目录"
     type        = string
     default = "/root"
+}
+variable "local_key_position" {
+    description = "用户所在home目录"
+    type        = string
+    default = "~/.ssh/terraform-aws"
 }
 
 

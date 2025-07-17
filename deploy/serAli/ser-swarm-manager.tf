@@ -1,5 +1,6 @@
 
 resource "alicloud_instance" "swarm_manager" {
+    count = var.instance_count["swarm_manager"]
     instance_name         = "terraform-manager"
     internet_max_bandwidth_out = var.max_bandwidth_out
     system_disk_category  = var.instance_disk_category
@@ -11,13 +12,13 @@ resource "alicloud_instance" "swarm_manager" {
 
 
     availability_zone     = var.availability_zone
-    image_id              = var.image_id
+    image_id              = local_file.image_id.content
     instance_type         = var.instance_type_2u4g
 
     # 抢占式配置（从变量传入或使用默认值）
-    instance_charge_type         = var.instance_charge_type
-    spot_strategy                = var.spot_strategy
-    spot_price_limit             = var.spot_price_limit
+    # instance_charge_type         = var.instance_charge_type
+    # spot_strategy                = var.spot_strategy
+    # spot_price_limit             = var.spot_price_limit
 
 
     tags = {
@@ -66,11 +67,11 @@ resource "alicloud_instance" "swarm_manager" {
 output "mSerPublicIP" {
   depends_on = [ alicloud_instance.swarm_manager ]
   value = join("\n", [
-    "[mSer]",
-    alicloud_instance.swarm_manager.public_ip,
-    alicloud_instance.swarm_manager.private_ip,
-    "",
-  ])
+                    "[mSer]",
+                    join("\n", [for idx, manager in alicloud_instance.swarm_manager:  
+                                "${idx}-${manager.public_ip}-${manager.private_ip}"
+                                ])
+                    ])
   description = "节点公网IP地址"
 }
 
@@ -79,16 +80,16 @@ resource "null_resource" "mSerENVInit" {
   provisioner "local-exec" {
     command = <<EOT
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/allNodes.ini
-${alicloud_instance.swarm_manager.public_ip}
+${join("\n", [for manager in alicloud_instance.swarm_manager: manager.public_ip])}
 EOF
 
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/swarm_manager.ini
-${alicloud_instance.swarm_manager.public_ip}
+${join("\n", [for manager in alicloud_instance.swarm_manager: manager.public_ip])}
 EOF
 
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/awsenv.ini
 [mSer]
-${alicloud_instance.swarm_manager.public_ip}
+${join("\n", [for manager in alicloud_instance.swarm_manager: manager.public_ip])}
 [mSer:vars]
 ansible_user=${var.target_user}
 ansible_ssh_private_key_file=~/.ssh/terraform-aws
@@ -106,11 +107,16 @@ resource "null_resource" "mSerSSHConfig" {
   provisioner "local-exec" {
     command = <<EOT
     cat << 'EOF' >> ${path.module}/../_ssh/config
-Host mSer
-${format("Hostname %s", alicloud_instance.swarm_manager.public_ip)}
-User ${var.target_user}
-IdentityFile ~/.ssh/terraform-aws
-
+    ${
+    join("\n", [for idx, swarm_manager in alicloud_instance.swarm_manager: 
+      join("\n", [
+        format("Host mSer-%s", idx),
+        format("Hostname %s", swarm_manager.public_ip),
+        format("User %s", var.target_user),
+        "IdentityFile ~/.ssh/terraform-aws"
+      ])
+    ])
+    }
 EOF
 EOT
   }

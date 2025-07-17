@@ -1,4 +1,5 @@
 resource "alicloud_instance" "auth" {
+    count = var.instance_count["auth"]
     instance_name         = "terraform-auth"
     internet_max_bandwidth_out = var.max_bandwidth_out
     system_disk_category  = var.instance_disk_category
@@ -10,13 +11,13 @@ resource "alicloud_instance" "auth" {
 
 
     availability_zone     = var.availability_zone
-    image_id              = var.image_id
+    image_id              = local_file.image_id.content
     instance_type         = var.instance_type_2u4g
 
     # 抢占式配置（从变量传入或使用默认值）
-    instance_charge_type         = var.instance_charge_type
-    spot_strategy                = var.spot_strategy
-    spot_price_limit             = var.spot_price_limit
+    # instance_charge_type         = var.instance_charge_type
+    # spot_strategy                = var.spot_strategy
+    # spot_price_limit             = var.spot_price_limit
 
     tags = {
       Name       = "swarm-auth"
@@ -27,8 +28,8 @@ resource "alicloud_instance" "auth" {
 
     user_data = templatefile("tpl/user_data_worker_create.tpl", {
         NodeType    = "auth"
-        Swarm_Manager_ID = alicloud_instance.swarm_manager.id
-        MANAGER_IP = alicloud_instance.swarm_manager.private_ip
+        Swarm_Manager_ID = alicloud_instance.swarm_manager[0].id
+        MANAGER_IP = alicloud_instance.swarm_manager[0].private_ip
         target_user = var.target_user
         target_user_home = var.target_user_home
     })
@@ -60,11 +61,11 @@ resource "alicloud_instance" "auth" {
 output "authSerPublicIP" {
   depends_on = [ alicloud_instance.auth ]
   value = join("\n", [
-    "[authSer]",
-    alicloud_instance.auth.public_ip,
-    alicloud_instance.auth.private_ip,
-    "",
-  ])
+                    "[authSer]",
+                    join("\n", [for idx, auth in alicloud_instance.auth:  
+                                "${idx}-${auth.public_ip}-${auth.private_ip}"
+                                ])
+                    ])
   description = "节点公网IP地址"
 }
 
@@ -73,20 +74,20 @@ resource "null_resource" "authSerENVInit" {
   provisioner "local-exec" {
     command = <<EOT
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/allNodes.ini
-${alicloud_instance.auth.public_ip}
+${join("\n", [for auth in alicloud_instance.auth: auth.public_ip])}
 EOF
 
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/swarm_worker.ini
-${alicloud_instance.auth.public_ip}
+${join("\n", [for auth in alicloud_instance.auth: auth.public_ip])}
 EOF
 
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/biz_auth.ini
-${alicloud_instance.auth.public_ip}
+${join("\n", [for auth in alicloud_instance.auth: auth.public_ip])}
 EOF
 
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/awsenv.ini
 [authSer]
-${alicloud_instance.auth.public_ip}
+${join("\n", [for auth in alicloud_instance.auth: auth.public_ip])}
 [authSer:vars]
 ansible_user=${var.target_user}
 ansible_ssh_private_key_file=~/.ssh/terraform-aws
@@ -103,11 +104,16 @@ resource "null_resource" "authSerSSHConfig" {
   provisioner "local-exec" {
     command = <<EOT
     cat << 'EOF' >> ${path.module}/../_ssh/config
-Host authSer
-${format("Hostname %s", alicloud_instance.auth.public_ip)}
-User ${var.target_user}
-IdentityFile ~/.ssh/terraform-aws
-
+    ${
+    join("\n", [for idx, auth in alicloud_instance.auth: 
+      join("\n", [
+        format("Host authSer-%s", idx),
+        format("Hostname %s", auth.public_ip),
+        format("User %s", var.target_user),
+        "IdentityFile ~/.ssh/terraform-aws"
+      ])
+    ])
+    }
 EOF
 EOT
   }

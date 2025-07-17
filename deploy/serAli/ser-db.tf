@@ -1,4 +1,5 @@
 resource "alicloud_instance" "db" {
+    count = var.instance_count["db"]
     instance_name         = "terraform-db"
     internet_max_bandwidth_out = var.max_bandwidth_out
     system_disk_category  = var.instance_disk_category
@@ -10,13 +11,13 @@ resource "alicloud_instance" "db" {
 
 
     availability_zone     = var.availability_zone
-    image_id              = var.image_id
+    image_id              = local_file.image_id.content
     instance_type         = var.instance_type_2u4g
 
     # 抢占式配置（从变量传入或使用默认值）
-    instance_charge_type         = var.instance_charge_type
-    spot_strategy                = var.spot_strategy
-    spot_price_limit             = var.spot_price_limit
+    # instance_charge_type         = var.instance_charge_type
+    # spot_strategy                = var.spot_strategy
+    # spot_price_limit             = var.spot_price_limit
 
     tags = {
       Name       = "swarm-db"
@@ -27,8 +28,8 @@ resource "alicloud_instance" "db" {
 
     user_data = templatefile("tpl/user_data_worker_create.tpl", {
         NodeType    = "db"
-        Swarm_Manager_ID = alicloud_instance.swarm_manager.id
-        MANAGER_IP = alicloud_instance.swarm_manager.private_ip
+        Swarm_Manager_ID = alicloud_instance.swarm_manager[0].id
+        MANAGER_IP = alicloud_instance.swarm_manager[0].private_ip
         target_user = var.target_user
         target_user_home = var.target_user_home
     })
@@ -66,11 +67,11 @@ resource "alicloud_instance" "db" {
 output "dbSerPublicIP" {
   depends_on = [ alicloud_instance.db ]
   value = join("\n", [
-    "[dbSer]",
-    alicloud_instance.db.public_ip,
-    alicloud_instance.db.private_ip,
-    "",
-  ])
+                    "[dbSer]",
+                    join("\n", [for idx, db in alicloud_instance.db:  
+                                "${idx}-${db.public_ip}-${db.private_ip}"
+                                ])
+                    ])
   description = "节点公网IP地址"
 }
 
@@ -81,20 +82,20 @@ resource "null_resource" "dbSerENVInit" {
   provisioner "local-exec" {
     command = <<EOT
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/allNodes.ini
-${alicloud_instance.db.public_ip}
+${join("\n", [for db in alicloud_instance.db: db.public_ip])}
 EOF
 
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/swarm_worker.ini
-${alicloud_instance.db.public_ip}
+${join("\n", [for db in alicloud_instance.db: db.public_ip])}
 EOF
 
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/biz_db.ini
-${alicloud_instance.db.public_ip}
+${join("\n", [for db in alicloud_instance.db: db.public_ip])}
 EOF
 
 cat << EOF >> ${path.module}/../ansible-playbooks/inventory/awsenv.ini
 [dbSer]
-${alicloud_instance.db.public_ip}
+${join("\n", [for db in alicloud_instance.db: db.public_ip])}
 [dbSer:vars]
 ansible_user=${var.target_user}
 ansible_ssh_private_key_file=~/.ssh/terraform-aws
@@ -111,11 +112,16 @@ resource "null_resource" "dbSerSSHConfig" {
   provisioner "local-exec" {
     command = <<EOT
     cat << 'EOF' >> ${path.module}/../_ssh/config
-Host dbSer
-${format("Hostname %s", alicloud_instance.db.public_ip)}
-User ${var.target_user}
-IdentityFile ~/.ssh/terraform-aws
-
+    ${
+    join("\n", [for idx, db in alicloud_instance.db: 
+      join("\n", [
+        format("Host dbSer-%s", idx),
+        format("Hostname %s", db.public_ip),
+        format("User %s", var.target_user),
+        "IdentityFile ~/.ssh/terraform-aws"
+      ])
+    ])
+    }
 EOF
 EOT
   }
