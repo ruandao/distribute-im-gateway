@@ -1,6 +1,6 @@
 resource "alicloud_instance" "auth" {
     instance_name         = "terraform-auth"
-    internet_max_bandwidth_out = 10
+    internet_max_bandwidth_out = var.max_bandwidth_out
     system_disk_category  = var.instance_disk_category
     # associate_public_ip_address = true
 
@@ -13,6 +13,10 @@ resource "alicloud_instance" "auth" {
     image_id              = var.image_id
     instance_type         = var.instance_type_2u4g
 
+    # 抢占式配置（从变量传入或使用默认值）
+    instance_charge_type         = var.instance_charge_type
+    spot_strategy                = var.spot_strategy
+    spot_price_limit             = var.spot_price_limit
 
     tags = {
       Name       = "swarm-auth"
@@ -86,6 +90,7 @@ ${alicloud_instance.auth.public_ip}
 [authSer:vars]
 ansible_user=${var.target_user}
 ansible_ssh_private_key_file=~/.ssh/terraform-aws
+target_user_home=${var.target_user_home}
 node_type=biz_auth
 
 EOF

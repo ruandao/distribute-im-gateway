@@ -10,6 +10,7 @@ export ENV=prod
 
 EOT
 
+yum install -y epel-release
 yum update -y
 yum install -y docker git ansible screen
 usermod -a -G docker {{ target_user }}

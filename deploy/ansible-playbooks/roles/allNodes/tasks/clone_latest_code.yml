@@ -1,5 +1,5 @@
 - name: Print server name and user to remote 
-  shell: "echo '${date} Currently {{ ansible_user }} is logining {{ inventory_hostname }}({{ ansible_host }})' >> /home/{{ ansible_user }}/hi"
+  shell: "echo '${date} Currently {{ ansible_user }} is logining {{ inventory_hostname }}({{ ansible_host }})' >> {{ target_user_home }}/hi"
 
 - name: 检查仓库目录是否存在
   stat:

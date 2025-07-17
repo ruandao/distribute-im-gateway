@@ -15,6 +15,7 @@ resource "local_file" "cleanAllNodesENVInit" {
 [allNodes:vars]
 ansible_user=${var.target_user}
 ansible_ssh_private_key_file=~/distribute-im-gateway/deploy/_ssh/terraform-aws
+target_user_home=${var.target_user_home}
 [allNodes]
 EOF
 }
@@ -24,6 +25,7 @@ resource "local_file" "cleanSwarmManagerENVInit" {
 [swarm_manager:vars]
 ansible_user=${var.target_user}
 ansible_ssh_private_key_file=~/distribute-im-gateway/deploy/_ssh/terraform-aws
+target_user_home=${var.target_user_home}
 node_type=manager
 [swarm_manager]
 EOF
@@ -34,6 +36,7 @@ resource "local_file" "cleanSwarmWorkerENVInit" {
 [swarm_worker:vars]
 ansible_user=${var.target_user}
 ansible_ssh_private_key_file=~/distribute-im-gateway/deploy/_ssh/terraform-aws
+target_user_home=${var.target_user_home}
 [swarm_worker]
 EOF
 }
@@ -43,6 +46,7 @@ resource "local_file" "cleanBIZ_DBENVInit" {
 [biz_db:vars]
 ansible_user=${var.target_user}
 ansible_ssh_private_key_file=~/distribute-im-gateway/deploy/_ssh/terraform-aws
+target_user_home=${var.target_user_home}
 node_type=biz_db
 [biz_db]
 EOF
@@ -54,6 +58,7 @@ resource "local_file" "cleanBIZ_RedisENVInit" {
 ansible_user=${var.target_user}
 ansible_ssh_private_key_file=~/distribute-im-gateway/deploy/_ssh/terraform-aws
 node_type=biz_redis
+target_user_home=${var.target_user_home}
 [biz_redis]
 EOF
 }
@@ -64,6 +69,7 @@ resource "local_file" "cleanBIZ_AuthENVInit" {
 ansible_user=${var.target_user}
 ansible_ssh_private_key_file=~/distribute-im-gateway/deploy/_ssh/terraform-aws
 node_type=biz_auth
+target_user_home=${var.target_user_home}
 [biz_auth]
 EOF
 }

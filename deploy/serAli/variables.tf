@@ -31,6 +31,12 @@ variable "instance_disk_category" {
     type        = string
     default = "cloud_essd_entry"
 }
+variable "max_bandwidth_out" {
+    description = "最大带宽"
+    type        = string
+    default = 1000
+}
+
 
 variable "key_pair_name" {
     description = "密钥名称"
@@ -49,6 +55,23 @@ variable "target_user_home" {
     default = "/root"
 }
 
+
+variable "instance_charge_type" {
+    description = "付费类型"
+    type        = string
+    default = "SpotWithPriceLimit"
+}
+variable "spot_strategy" {
+    description = "付费策略"
+    type        = string
+    default = "SpotWithPriceLimit"
+}
+
+variable "spot_price_limit" {
+    description = "价格上限"
+    type        = string
+    default = "0.5"
+}
 
 
 variable "ip_manager" {
