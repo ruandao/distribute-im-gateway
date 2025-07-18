@@ -17,7 +17,7 @@ trap cleanup EXIT
 
 # 60分钟后自动释放服务器资源或者收到中断指令后释放服务器资源
 # 计算60分钟后的时间戳
-target_time=$(( $(date +%s) + 3600 ))
+target_time=$(( $(date +%s) + 36000 ))
 
 # 等待直到目标时间或收到中断信号
 while true; do

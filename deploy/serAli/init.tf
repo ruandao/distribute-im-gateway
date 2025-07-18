@@ -1,7 +1,12 @@
 
 resource "null_resource" "cleanSSHConfig" {
   provisioner "local-exec" {
-    command = "echo 'Host *\n\tServerAliveInterval 60 # 每60秒发送一次心跳\n\tServerAliveCountMax 3 # 连续3次无响应才断开(即180秒无响应才断开)\n' > '${path.module}/../_ssh/config'"
+  command = <<EOT
+  
+echo '${templatefile("tpl/ssh_config.tpl", {})}' > '${path.module}/../_ssh/config'
+echo "" > '${path.module}/../_ssh/known_hosts'
+
+EOT
   }
 }
 
