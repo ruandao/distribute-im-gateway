@@ -26,5 +26,14 @@
 - name: Change to Currently branch
   shell: "cd distribute-im-gateway && git checkout devx/ljy-draft"
 
+- name: 执行 git log 命令
+  shell: git log -1 --pretty=format:"%h %ad | %s%d [%an]" --date=short
+  args:
+    chdir: distribute-im-gateway  # 替换为你的仓库路径
+  register: git_log
+
+- name: 显示最后一条日志
+  debug:
+    var: git_log.stdout
 # - name: Run mysql
 #   shell: 'cd distribute-im-gateway && bash deploy/data/mysql/clean.sh'

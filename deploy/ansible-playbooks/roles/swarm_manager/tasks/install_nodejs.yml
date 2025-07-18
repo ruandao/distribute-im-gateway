@@ -6,7 +6,14 @@
     update_cache: true
     force_apt_get: true  # 避免 apt 警告
 
-- name: 安装全局 npm 包
+- name: 安装 npm (Debian/Ubuntu)
+  apt:
+    name: npm
+    state: present
+    update_cache: true
+    force_apt_get: true  # 避免 apt 警告    
+
+- name: 安装全局 yarn 包
   npm:
     name: yarn
     global: true
