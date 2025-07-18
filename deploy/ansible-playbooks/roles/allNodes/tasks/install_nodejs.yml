@@ -1,27 +1,15 @@
 
-- name: 安装依赖的 nodejs, npx, yarn
-  shell: |
-    curl -sL https://rpm.nodesource.com/setup_18.x | bash -
-    apt install -y nodejs
+- name: 安装 Node.js (Debian/Ubuntu)
+  apt:
+    name: nodejs
+    state: present
+    update_cache: true
+    force_apt_get: true  # 避免 apt 警告
 
-    # 验证安装
-    node --version
-    npm --version
+- name: 安装全局 npm 包
+  npm:
+    name: yarn
+    global: true
+    state: present    
 
-    # 安装Yarn
-    npm install -g yarn
-
-    # 验证npx和Yarn安装
-    yarn --version
-    npx --version
-    
-  register: npx
-  changed_when: false
-
-- name: 显示版本信息
-  debug:
-    msg: |
-      Node.js: {{ node_versions.stdout_lines[0] }}
-      npm: {{ node_versions.stdout_lines[1] }}
-      npx: {{ node_versions.stdout_lines[2] }}
     
