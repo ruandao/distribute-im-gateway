@@ -9,7 +9,7 @@ resource "alicloud_instance" "db" {
     vswitch_id            = alicloud_vswitch.main.id
     key_name              = data.alicloud_key_pairs.existing.ids.0
 
-
+    resource_group_id = var.resource_group_id
     availability_zone     = var.availability_zone
     image_id              = local_file.image_id.content
     instance_type         = var.instance_type_2u4g

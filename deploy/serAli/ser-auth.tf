@@ -13,7 +13,7 @@ resource "alicloud_instance" "auth" {
     availability_zone     = var.availability_zone
     image_id              = local_file.image_id.content
     instance_type         = var.instance_type_2u4g
-
+    resource_group_id = var.resource_group_id
     # 抢占式配置（从变量传入或使用默认值）
     instance_charge_type         = var.instance_charge_type
     spot_strategy                = var.spot_strategy

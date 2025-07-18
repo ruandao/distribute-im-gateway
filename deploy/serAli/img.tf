@@ -8,6 +8,7 @@ resource "alicloud_instance" "software_installer" {
   # 仅当目标镜像不存在时创建实例
   count = length(data.alicloud_images.target_image.ids) == 0 ? 1 : 0
   
+  resource_group_id = var.resource_group_id
   image_id          = var.base_image_id
   instance_type     = var.img_instance_type
   security_groups   = [alicloud_security_group.main.id]
@@ -100,6 +101,7 @@ resource "alicloud_image" "custom_image" {
   count = length(data.alicloud_images.target_image.ids) == 0 ? 1 : 0
   depends_on = [alicloud_instance.software_installer, null_resource.software_installation]
   
+  resource_group_id = var.resource_group_id
   instance_id = alicloud_instance.software_installer[0].id
   image_name         = var.image_id
   description        = "Custom image with software installed"
