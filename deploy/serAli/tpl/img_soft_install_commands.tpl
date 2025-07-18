@@ -21,7 +21,7 @@ chmod a+r /etc/apt/keyrings/docker.asc
 bash ${target_user_home}/ubuntu_install_docker.sh 
 apt-get update
 apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
+apt-get install -y docker-compose
 
 
 usermod -a -G docker ${target_user}
