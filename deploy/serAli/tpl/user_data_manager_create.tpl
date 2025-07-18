@@ -10,16 +10,6 @@ export ENV=prod
 
 EOT
 
-yum install -y epel-release
-yum update -y
-yum install -y docker git ansible screen
-usermod -a -G docker {{ target_user }}
-id {{ target_user }}
-newgrp docker
-systemctl enable docker.service
-systemctl start docker.service
-
-
 
 echo "Instance IP: $InstanceIP $NODE_TYPE"
 docker info | grep Swarm

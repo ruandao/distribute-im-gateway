@@ -82,8 +82,10 @@ resource "null_resource" "software_installation" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x ~/img_soft_install_commands.sh",
-      "bash ~/img_soft_install_commands.sh",
-      "shutdown -h now",
+      "bash ~/img_soft_install_commands.sh",  # -x 开启命令调试输出
+      # 打印脚本退出码（确认是否正常退出）
+      "echo 'Script exit code: $?' >> ~/process.log",
+      "sudo shutdown -h now",
     ]
   }
 }
@@ -105,7 +107,7 @@ resource "alicloud_image" "custom_image" {
   }
   
   lifecycle {
-    create_before_destroy = true
+    prevent_destroy = true
   }
   
 }
@@ -116,14 +118,4 @@ locals {
 resource "local_file" "image_id" {
   filename = "${path.module}/output/image_id"
   content = "${local.super_img_id}"
-}
-
-# 生成镜像后销毁实例（通过 null_resource 触发）
-resource "null_resource" "trigger_destroy" {
-  depends_on = [alicloud_image.custom_image, local_file.image_id]  # 依赖镜像创建完成
-
-  provisioner "local-exec" {
-    # 使用 terraform taint 标记资源需要重建（触发销毁）
-    command = "terraform taint alicloud_instance.software_installer"
-  }
 }

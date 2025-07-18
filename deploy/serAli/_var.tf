@@ -3,7 +3,7 @@ variable "instance_count" {
   type = map(number)
   description = "实例数量配置"
   default = {
-    "swarm_manager" = 0
+    "swarm_manager" = 1
     
     "db" = 0
     "redis" = 0
