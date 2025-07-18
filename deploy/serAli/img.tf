@@ -107,7 +107,7 @@ resource "alicloud_image" "custom_image" {
   }
   
   lifecycle {
-    prevent_destroy = true
+    create_before_destroy = true
   }
   
 }
