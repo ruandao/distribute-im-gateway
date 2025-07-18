@@ -15,6 +15,11 @@
     - name: 加入成为 worker
       ansible.builtin.include_tasks: roles/swarm_worker/tasks/swarm_join.yml
 
+- hosts: biz_db
+  tasks:
+    - name: 准备数据目录
+      ansible.builtin.include_tasks: roles/biz_db/tasks/prepare_data_dir.yml
+
 - hosts: swarm_manager
   tasks:
     - name: 给节点打标签

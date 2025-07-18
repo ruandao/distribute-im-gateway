@@ -1,0 +1,6 @@
+- name: 准备目录
+  shell: |
+    cd distribute-im-gateway/
+    bash deploy/data/mysql/prepareDataDir.sh
+
+

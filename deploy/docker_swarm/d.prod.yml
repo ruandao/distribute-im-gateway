@@ -8,13 +8,13 @@ services:
           - node.labels.node-type == biz_db
     volumes:
       - type: bind
-        source: ./data/mysql/volumes # 主机上的配置文件路径
+        source: ../data/mysql/volumes # 主机上的配置文件路径
         target: /var/lib/mysqld # 容器内的挂载路径
       - type: bind
-        source: ./data/mysql/my.cnf # 主机上的配置文件路径
+        source: ../data/mysql/my.cnf # 主机上的配置文件路径
         target: /etc/mysql/my.cnf # 容器内的挂载路径
       - type: bind
-        source: ./data/mysql/initSql # 主机上的配置文件路径
+        source: ../data/mysql/initSql # 主机上的配置文件路径
         target: /docker-entrypoint-initdb.d # 容器内的挂载路径
 
 
