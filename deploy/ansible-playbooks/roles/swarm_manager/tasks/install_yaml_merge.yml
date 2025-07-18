@@ -1,22 +1,6 @@
 
 - name: 安装依赖的 nodejs, npx, yarn
-  shell: |
-    curl -sL https://rpm.nodesource.com/setup_18.x | bash -
-    apt install -y nodejs
-
-    # 验证安装
-    node --version
-    apt --version
-
-    # 安装Yarn
-    npm install -g yarn
-
-    # 验证npx和Yarn安装
-    yarn --version
-    npx --version
-    
-  register: npx
-  changed_when: false
+  include_tasks: install_nodejs.yml
 
 - name: 安装 @alexlafroscia/yaml-merge
   shell: |

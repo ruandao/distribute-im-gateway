@@ -1,0 +1,15 @@
+
+- name: 安装 Node.js (Debian/Ubuntu)
+  apt:
+    name: nodejs
+    state: present
+    update_cache: true
+    force_apt_get: true  # 避免 apt 警告
+
+- name: 安装全局 npm 包
+  npm:
+    name: yarn
+    global: true
+    state: present    
+
+    
