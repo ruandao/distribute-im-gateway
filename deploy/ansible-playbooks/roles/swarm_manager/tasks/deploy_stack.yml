@@ -1,5 +1,6 @@
 - name: 生成最新配置文件 docker-compose.yml
   shell: |
+    /bin/bash -l
     cd ~/distribute-im-gateway
     bash deploy/docker_swarm/genDockerCompose.sh
     ls -al deploy/docker_swarm/
@@ -12,6 +13,7 @@
 
 - name: 部署 Docker Stack
   shell: |
+    /bin/bash -l
     cd ~/distribute-im-gateway
     ls -al deploy/docker_swarm/
     bash deploy/docker_swarm/runDockerStack.sh
