@@ -9,7 +9,7 @@ resource "alicloud_vpc" "main" {
     local_file.cleanSwarmManagerENVInit, local_file.cleanSwarmWorkerENVInit,
     local_file.cleanBIZ_DBENVInit, local_file.cleanBIZ_RedisENVInit, local_file.cleanBIZ_AuthENVInit
   ]
-  vpc_name       = "terraform-vpc"
+  vpc_name       = "terraform_vpc"
   cidr_block = "172.31.32.0/20"
 }
 
@@ -18,12 +18,12 @@ resource "alicloud_vswitch" "main" {
   vpc_id            = alicloud_vpc.main.id
   cidr_block        = "172.31.32.0/20"
   zone_id           = var.availability_zone
-  vswitch_name      = "terraform-vswitch"
+  vswitch_name      = "terraform_vswitch"
 }
 
 # 创建安全组
 resource "alicloud_security_group" "main" {
-  security_group_name        = "terraform-sg"
+  security_group_name        = "terraform_sg"
   description                = "Terraform security group"
   vpc_id                     = alicloud_vpc.main.id
 }

@@ -1,6 +1,6 @@
 resource "alicloud_instance" "auth" {
     count = var.instance_count["auth"]
-    instance_name         = "terraform-auth"
+    instance_name         = "terraform_auth"
     internet_max_bandwidth_out = var.max_bandwidth_out
     system_disk_category  = var.instance_disk_category
     # associate_public_ip_address = true

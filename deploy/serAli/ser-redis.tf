@@ -1,6 +1,6 @@
 resource "alicloud_instance" "redis" {
     count = var.instance_count["redis"]
-    instance_name         = "terraform-redis"
+    instance_name         = "terraform_redis"
     internet_max_bandwidth_out = var.max_bandwidth_out
     system_disk_category  = var.instance_disk_category
     # associate_public_ip_address = true

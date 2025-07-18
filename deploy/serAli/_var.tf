@@ -28,7 +28,7 @@ variable "availability_zone" {
 variable "image_id" {
     description = "Aliyun image id 目标镜像名称（检查是否存在或创建）"
     type        = string
-    default     = "img-0717_2254"
+    default     = "terraform_img-0717_2254"
 }
   
 variable "base_image_id" {

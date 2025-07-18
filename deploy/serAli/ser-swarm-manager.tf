@@ -1,7 +1,7 @@
 
 resource "alicloud_instance" "swarm_manager" {
     count = var.instance_count["swarm_manager"]
-    instance_name         = "terraform-manager"
+    instance_name         = "terraform_manager"
     internet_max_bandwidth_out = var.max_bandwidth_out
     system_disk_category  = var.instance_disk_category
     # associate_public_ip_address = true
