@@ -52,6 +52,22 @@ variable "instance_type_2u4g" {
     default = "ecs.e-c1m2.large"
 }
 
+variable "instance_charge_type" {
+    description = "付费类型"
+    type        = string
+    default = "PostPaid"
+}
+variable "spot_strategy" {
+    description = "付费策略"
+    type        = string
+    default = "SpotWithPriceLimit"
+}
+
+variable "spot_price_limit" {
+    description = "价格上限"
+    type        = string
+    default = "0.03"
+}
 
 variable "instance_disk_category" {
     description = "云盘类型"
@@ -88,22 +104,6 @@ variable "local_key_position" {
 }
 
 
-variable "instance_charge_type" {
-    description = "付费类型"
-    type        = string
-    default = "SpotWithPriceLimit"
-}
-variable "spot_strategy" {
-    description = "付费策略"
-    type        = string
-    default = "SpotWithPriceLimit"
-}
-
-variable "spot_price_limit" {
-    description = "价格上限"
-    type        = string
-    default = "0.5"
-}
 
 
 variable "ip_manager" {

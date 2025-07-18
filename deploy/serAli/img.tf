@@ -12,10 +12,14 @@ resource "alicloud_instance" "software_installer" {
   instance_type     = var.img_instance_type
   security_groups   = [alicloud_security_group.main.id]
   vswitch_id        = alicloud_vswitch.main.id
-  instance_name     = "software-installer-${var.image_id}"
+  instance_name     = "terraform_software-installer-${var.image_id}"
   internet_max_bandwidth_out = var.max_bandwidth_out
   system_disk_category  = var.instance_disk_category
   key_name              = data.alicloud_key_pairs.existing.ids.0
+
+  instance_charge_type         = var.instance_charge_type
+  spot_strategy                = var.spot_strategy
+  spot_price_limit             = var.spot_price_limit
   
   tags = {
     Name        = "terraform-im-${var.image_id}"
@@ -114,6 +118,7 @@ resource "alicloud_image" "custom_image" {
 
 locals {
   super_img_id =  length(data.alicloud_images.target_image.images) > 0 ? data.alicloud_images.target_image.images[0].id : alicloud_image.custom_image[0].id
+  # super_img_id =  "m-t4nfp3lv7zdnhoelmo1h"
 }
 resource "local_file" "image_id" {
   filename = "${path.module}/output/image_id"

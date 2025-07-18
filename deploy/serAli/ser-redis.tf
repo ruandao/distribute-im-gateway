@@ -15,9 +15,9 @@ resource "alicloud_instance" "redis" {
     instance_type         = var.instance_type_2u4g
 
     # 抢占式配置（从变量传入或使用默认值）
-    # instance_charge_type         = var.instance_charge_type
-    # spot_strategy                = var.spot_strategy
-    # spot_price_limit             = var.spot_price_limit
+    instance_charge_type         = var.instance_charge_type
+    spot_strategy                = var.spot_strategy
+    spot_price_limit             = var.spot_price_limit
 
     tags = {
       Name       = "swarm-redis"

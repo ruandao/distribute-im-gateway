@@ -1,6 +1,6 @@
 resource "alicloud_instance" "db" {
     count = var.instance_count["db"]
-    instance_name         = "terraform-db"
+    instance_name         = "terraform_db"
     internet_max_bandwidth_out = var.max_bandwidth_out
     system_disk_category  = var.instance_disk_category
     # associate_public_ip_address = true
@@ -15,9 +15,9 @@ resource "alicloud_instance" "db" {
     instance_type         = var.instance_type_2u4g
 
     # 抢占式配置（从变量传入或使用默认值）
-    # instance_charge_type         = var.instance_charge_type
-    # spot_strategy                = var.spot_strategy
-    # spot_price_limit             = var.spot_price_limit
+    instance_charge_type         = var.instance_charge_type
+    spot_strategy                = var.spot_strategy
+    spot_price_limit             = var.spot_price_limit
 
     tags = {
       Name       = "swarm-db"
