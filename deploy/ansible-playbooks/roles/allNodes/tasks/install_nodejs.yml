@@ -2,7 +2,7 @@
 - name: 安装依赖的 nodejs, npx, yarn
   shell: |
     curl -sL https://rpm.nodesource.com/setup_18.x | bash -
-    yum install -y nodejs
+    apt install -y nodejs
 
     # 验证安装
     node --version
