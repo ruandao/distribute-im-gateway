@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 set -x
 echo "开始安装软件..."
 LOG_FILE="process.log"

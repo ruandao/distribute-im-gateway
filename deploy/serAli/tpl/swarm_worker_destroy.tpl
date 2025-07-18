@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 set -x
 
 if docker info | grep -q 'Swarm: active'; then

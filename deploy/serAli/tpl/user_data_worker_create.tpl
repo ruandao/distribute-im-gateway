@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 set -x
 
 echo << EOT >> /etc/bashrc

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 set -x
 Swarm_Node_ID="${ Swarm_Node_ID }"
 

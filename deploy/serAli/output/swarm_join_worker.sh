@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 set -x
 # $1 位要创建的服务器供应商的对应目录
 cd $1/output

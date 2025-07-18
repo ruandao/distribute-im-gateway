@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 
 
 # 将  https://download.docker.com/linux/ubuntu   替换为 阿里云 的镜像
