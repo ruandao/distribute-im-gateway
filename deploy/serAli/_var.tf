@@ -5,7 +5,7 @@ variable "instance_count" {
   default = {
     "swarm_manager" = 1
     
-    "db" = 0
+    "db" = 1
     "redis" = 0
     
     "auth" = 0
