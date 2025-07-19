@@ -1,8 +1,6 @@
 - name: 生成最新配置文件 docker-compose.yml
   shell: |
-    echo "ENV: $ENV"
     export ENV={{ ENV }}
-    echo "ENV2: $ENV"
     cd ~/distribute-im-gateway
     bash deploy/docker_swarm/genDockerCompose.sh
     ls -al deploy/docker_swarm/

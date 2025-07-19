@@ -3,9 +3,6 @@ services:
     deploy:
       mode: replicated # 仅在 manager 节点运行 1 个实例
       replicas: 1
-      placement:
-        constraints:
-          - node.labels.node-type == biz_db
     volumes:
       - ~/distribute-im-gateway/deploy/data/mysql/volumes:/var/lib/mysql
       - ~/distribute-im-gateway/deploy/data/mysql/my.cnf:/etc/mysql/my.cnf

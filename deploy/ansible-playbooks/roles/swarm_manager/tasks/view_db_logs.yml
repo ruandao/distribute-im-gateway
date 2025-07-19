@@ -1,0 +1,8 @@
+- name: 查看数据库安装执行日志
+  shell: |
+    docker service logs im_mysql-test
+  register: db_logs
+
+- name: 显示
+  debug:
+    var: db_logs.stdout_lines  

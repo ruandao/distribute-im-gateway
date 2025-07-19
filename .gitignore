@@ -86,3 +86,5 @@ deploy/serAli/output/ssh_error.log
 deploy/serAli/output/swarm_token.json
 deploy/docker_swarm/docker-compose.yml
 tmp.json
+
+_output/
