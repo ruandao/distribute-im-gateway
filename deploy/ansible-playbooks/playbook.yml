@@ -25,6 +25,12 @@
     - name: 准备数据目录
       ansible.builtin.include_tasks: roles/biz_redis/tasks/prepare_data_dir.yml
 
+- hosts: biz_monitor
+  tasks:
+    - name: 准备数据目录
+      ansible.builtin.include_tasks: roles/biz_monitor/tasks/prepare_data_dir.yml
+      
+
 
 - hosts: swarm_manager
   tasks:
