@@ -7,7 +7,6 @@ function cleanDir() {
       echo "目录 $directory 存在，准备删除..."
       rm -rf "$directory"
       echo "目录 $directory 已删除。"
-  else
       echo "目录 $directory 不存在。"
       # 创建目录
       # 创建目录
