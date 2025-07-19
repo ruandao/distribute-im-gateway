@@ -20,6 +20,7 @@
     - biz_db
     - biz_redis
     - biz_auth
+    - biz_monitor
   register: label_result
   failed_when: false
 
