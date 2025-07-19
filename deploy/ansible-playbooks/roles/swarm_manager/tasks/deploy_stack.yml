@@ -1,5 +1,8 @@
 - name: 生成最新配置文件 docker-compose.yml
   shell: |
+    echo "ENV: $ENV"
+    export ENV={{ ENV }}
+    echo "ENV2: $ENV"
     cd ~/distribute-im-gateway
     bash deploy/docker_swarm/genDockerCompose.sh
     ls -al deploy/docker_swarm/
@@ -7,8 +10,7 @@
   register: docker_compose
   vars:
     # 定义要设置的环境变量，可根据需要修改
-    environment_variables:
-      ENV: prod
+    ENV: prod
 
 - name: 显示生成的配置内容
   debug:
