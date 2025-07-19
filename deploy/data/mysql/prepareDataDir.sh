@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 
 # 定义要操作的目录路径
 directory="deploy/data/mysql/volumes"
@@ -15,6 +15,8 @@ else
     # 创建目录
     echo "创建目录 $directory ..."
     mkdir -p "$directory"
+    echo `pwd`/$directory
+    ls -al `pwd`/$directory
     echo "目录 $directory 创建成功。"
 fi
 
