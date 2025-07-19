@@ -15,7 +15,7 @@ else
 fi
 
 # 删除对应容器
-docker rm -f grafana-test
+docker rm -f grafana
 
 # 创建目录
 # 创建目录
@@ -24,4 +24,4 @@ mkdir -p "$directory"
 echo "目录 $directory 创建成功。"
 
 
-docker compose up -d grafana-test
+docker compose up -d grafana

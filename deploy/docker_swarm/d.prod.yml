@@ -37,7 +37,7 @@ services:
       placement:
         constraints:
           - node.labels.node-type == biz_monitor
-  grafana-test:
+  grafana:
     volumes:
       - type: bind
         source: ~/distribute-im-gateway/deploy/data/monitor/grafana/volumes # 主机上的配置文件路径
