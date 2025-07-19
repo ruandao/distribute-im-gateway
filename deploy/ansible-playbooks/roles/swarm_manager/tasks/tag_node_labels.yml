@@ -1,10 +1,18 @@
 - name: 为各个组的机器打标签
   shell: >
-    set -x
     # item 是 loop 中的每一个选项,就是说,对于 loop 列表,每个选项都会执行一遍这个脚本
     {% for ip in groups[item] %}
       echo "{{ ip }}-{{ hostvars[ip]['node_type'] }}" >> nodeVars
-      NodeID=`docker node ls -q | xargs -I {} docker node inspect {} -f '{% raw %} {{.ID}} {{ .Status.Addr }} {% endraw %}' | grep "{{ ip }}" | awk '{print $1}'`
+      # 获取所有节点ID
+      node_ids=$(docker node ls -q)
+      # 获取所有节点的ID和IP地址
+      node_info=$(xargs -I {} docker node inspect {} -f '{% raw %} {{.ID}} {{ .Status.Addr }} {% endraw %}' <<< "$node_ids")
+      # 筛选特定IP的节点信息
+      filtered_nodes=$(grep "{{ ip }}" <<< "$node_info")
+      # 提取节点ID
+      NodeID=$(awk '{print $1}' <<< "$filtered_nodes")
+      # 输出结果
+      echo "$NodeID"
       NodeType="{{ hostvars[ip]['node_type'] }}"
       docker node update --label-add node-type=$NodeType $NodeID    
     {% endfor %}
