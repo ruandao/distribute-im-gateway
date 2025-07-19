@@ -1,7 +1,7 @@
 services:
-  mysql-test:
+  mysql8:
     image: mysql:8.0
-    hostname: mysql-test
+    hostname: db
     environment:
       MYSQL_ROOT_PASSWORD: 123456
       TZ: Asia/Shanghai
@@ -13,11 +13,13 @@ services:
     command: --max_connections=1000
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_general_ci
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl --silent localhost:3306 >/dev/null || exit 1"]
-    #   interval: 10s
-    #   timeout: 10s
-    #   retries: 3
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "db", "-u", "root", "-p123456", "--silent"]
+      interval: 10s       # 检查间隔
+      timeout: 5s         # 单次检查超时时间
+      retries: 10         # 重试次数（增加次数，给足初始化时间）
+      start_period: 300s   # 启动宽限期（首次检查前等待300秒，让MySQL有时间初始化）
+
 
   # prometheus-test:
   #   image: prom/prometheus:v2.47.0

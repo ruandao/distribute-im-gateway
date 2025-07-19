@@ -1,5 +1,5 @@
 services:
-  mysql-test:
+  mysql8:
     deploy:
       mode: replicated # 仅在 manager 节点运行 1 个实例
       replicas: 1

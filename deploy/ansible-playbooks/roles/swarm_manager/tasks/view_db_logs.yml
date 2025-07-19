@@ -1,6 +1,6 @@
 - name: 查看数据库安装执行日志
   shell: |
-    docker service logs im_mysql-test
+    docker service logs im_mysql8
   register: db_logs
 
 - name: 显示
