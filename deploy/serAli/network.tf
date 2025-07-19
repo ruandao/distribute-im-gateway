@@ -7,7 +7,7 @@ resource "alicloud_vpc" "main" {
     local_file.cleanSerENVInit,  
     local_file.cleanAllNodesENVInit, 
     local_file.cleanSwarmManagerENVInit, local_file.cleanSwarmWorkerENVInit,
-    local_file.cleanBIZ_DBENVInit, local_file.cleanBIZ_RedisENVInit, local_file.cleanBIZ_AuthENVInit
+    local_file.cleanBIZ_DBENVInit, local_file.cleanBIZ_RedisENVInit, local_file.cleanBIZ_MonitorENVInit, local_file.cleanBIZ_AuthENVInit
   ]
   resource_group_id = var.resource_group_id
   vpc_name       = "terraform_vpc"

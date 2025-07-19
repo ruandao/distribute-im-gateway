@@ -58,6 +58,17 @@ node_type=biz_redis
 [biz_redis]
 EOF
 }
+resource "local_file" "cleanBIZ_MonitorENVInit" {
+  filename = "${path.module}/../ansible-playbooks/inventory/biz_monitor.ini"
+  content = <<EOF
+[biz_monitor:vars]
+ansible_user=ec2-user
+ansible_ssh_private_key_file=~/distribute-im-gateway/deploy/_ssh/terraform-aws
+node_type=biz_monitor
+[biz_monitor]
+EOF
+}
+
 resource "local_file" "cleanBIZ_AuthENVInit" {
   filename = "${path.module}/../ansible-playbooks/inventory/biz_auth.ini"
   content = <<EOF

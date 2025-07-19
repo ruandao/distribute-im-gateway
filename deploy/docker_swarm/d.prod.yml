@@ -26,26 +26,26 @@ services:
       replicas: 1
       placement:
         constraints:
-          - node.labels.node-type == redis
+          - node.labels.node-type == biz_redis
 
-  # prometheus-test:
-  #   volumes:
-  #     - type: bind
-  #       source: ./data/monitor/prometheus/prometheus.yml # 主机上的配置文件路径
-  #       target: /etc/prometheus/prometheus.yml # 容器内的挂载路径
-  #   deploy:
-  #     placement:
-  #       constraints:
-  #         - node.labels.node-type == monitor
-  # grafana-test:
-  #   volumes:
-  #     - type: bind
-  #       source: ./data/monitor/grafana/volumes # 主机上的配置文件路径
-  #       target: /var/lib/grafana # 容器内的挂载路径
-  #   deploy:
-  #     placement:
-  #       constraints:
-  #         - node.labels.node-type == monitor
+  prometheus:
+    volumes:
+      - type: bind
+        source: ~/distribute-im-gateway/deploy/data/monitor/prometheus/prometheus.yml # 主机上的配置文件路径
+        target: /etc/prometheus/prometheus.yml # 容器内的挂载路径
+    deploy:
+      placement:
+        constraints:
+          - node.labels.node-type == biz_monitor
+  grafana-test:
+    volumes:
+      - type: bind
+        source: ~/distribute-im-gateway/deploy/data/monitor/grafana/volumes # 主机上的配置文件路径
+        target: /var/lib/grafana # 容器内的挂载路径
+    deploy:
+      placement:
+        constraints:
+          - node.labels.node-type == biz_monitor
 
 
 

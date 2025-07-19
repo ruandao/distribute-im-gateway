@@ -11,3 +11,4 @@ function cd() {
 . bin/getIP.sh
 . bin/regServer.sh
 . bin/need_build_img.sh
+. bin/cleanDir.sh

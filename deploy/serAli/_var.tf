@@ -7,6 +7,7 @@ variable "instance_count" {
     
     "db" = 1
     "redis" = 1
+    "monitor" = 1
     
     "auth" = 0
   }
