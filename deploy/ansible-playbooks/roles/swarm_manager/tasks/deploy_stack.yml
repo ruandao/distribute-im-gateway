@@ -17,7 +17,17 @@
 - name: 部署 Docker Stack
   shell: |
     cd ~/distribute-im-gateway
-    ls -al deploy/docker_swarm/
+    bash deploy/docker_swarm/pullAllImages.sh
+
+  register: pull_imgs_result
+
+- name: 显示镜像拉取结果
+  debug:
+    var: pull_imgs_result.stdout_lines
+
+- name: 部署 Docker Stack
+  shell: |
+    cd ~/distribute-im-gateway
     bash deploy/docker_swarm/runDockerStack.sh
   register: deploy_result
 
