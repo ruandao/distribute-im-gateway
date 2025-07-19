@@ -42,7 +42,7 @@ services:
 
   grafana:
     image: grafana/grafana:10.1.5
-    user: "${UID:0}:${GID:0}"  # 使用环境变量或默认值
+    user: "${$UID:0}:${$GID:0}"  # 使用环境变量或默认值
     ports:
       - mode: ingress
         target: 3000

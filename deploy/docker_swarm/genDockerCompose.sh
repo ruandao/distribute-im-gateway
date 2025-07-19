@@ -9,5 +9,7 @@ set -x
 
 cd deploy/docker_swarm
 echo "ENV: $ENV" 
+export UID=`id -u`
+export GID=`id -g`
 yaml-merge .img.yml d.${ENV}.yml > docker-compose.yml
 
