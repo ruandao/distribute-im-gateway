@@ -6,7 +6,7 @@
   register: node_ids
   changed_when: false
 
-- name: 检查每个节点的标签
+- name: 展示每个节点的标签
   shell: |
     {% raw %} docker node inspect --format="{{ .ID }} {{ .Description.Hostname }} {{ .Spec.Labels }}"  {% endraw %} {{ item }}
   loop: "{{ node_ids.stdout_lines }}"
