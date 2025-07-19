@@ -20,6 +20,15 @@ services:
       retries: 10         # 重试次数（增加次数，给足初始化时间）
       start_period: 300s   # 启动宽限期（首次检查前等待300秒，让MySQL有时间初始化）
 
+  redis7:
+    image: redis:7.2-alpine # 使用官方 Redis 镜像
+    hostname: redisX
+    ports:
+      - mode: ingress
+        target: 6379
+        published: 6379
+        protocol: tcp
+    command: redis-server --appendonly yes # 启用 AOF 持久化
 
   # prometheus-test:
   #   image: prom/prometheus:v2.47.0
@@ -42,14 +51,6 @@ services:
   #     - GF_SECURITY_ADMIN_USER=admin
   #     - GF_SECURITY_ADMIN_PASSWORD=admin
 
-  # redis-test:
-  #   image: redis:7.2-alpine # 使用官方 Redis 镜像
-  #   ports:
-  #     - mode: ingress
-  #       target: 6379
-  #       published: 6379
-  #       protocol: tcp
-  #   command: redis-server --appendonly yes # 启用 AOF 持久化
 
   # mysqld-exporter:
   #   image: prom/mysqld-exporter

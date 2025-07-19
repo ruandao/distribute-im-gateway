@@ -1,0 +1,10 @@
+- name: 准备目录
+  shell: |
+    cd distribute-im-gateway/
+    bash deploy/data/redis/prepareDataDir.sh
+  register: prepareDir
+- name: 显示
+  debug:
+    var: prepareDir.stdout_lines
+
+

@@ -16,7 +16,17 @@ services:
       - type: bind
         source: ~/distribute-im-gateway/deploy/data/mysql/initSql # 主机上的配置文件路径
         target: /docker-entrypoint-initdb.d # 容器内的挂载路径
-
+  redis7:
+    volumes:
+      - type: bind
+        source: ~/distribute-im-gateway/deploy/data/redis/volumes # 主机上的配置文件路径
+        target: /data # 容器内的挂载路径
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.node-type == redis
 
   # prometheus-test:
   #   volumes:
@@ -37,15 +47,7 @@ services:
   #       constraints:
   #         - node.labels.node-type == monitor
 
-  # redis-test:
-  #   volumes:
-  #     - type: bind
-  #       source: ./data/redis/volumes # 主机上的配置文件路径
-  #       target: /data # 容器内的挂载路径
-  #   deploy:
-  #     placement:
-  #       constraints:
-  #         - node.labels.node-type == redis
+
 
   # mysqld-exporter:
   #   volumes:

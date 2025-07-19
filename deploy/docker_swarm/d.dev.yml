@@ -7,16 +7,19 @@ services:
       - ~/distribute-im-gateway/deploy/data/mysql/volumes:/var/lib/mysql
       - ~/distribute-im-gateway/deploy/data/mysql/my.cnf:/etc/mysql/my.cnf
       - ~/distribute-im-gateway/deploy/data/mysql/initSql:/docker-entrypoint-initdb.d
-
+  redis7:
+    deploy:
+      mode: replicated
+      replicas: 1
+    volumes:
+      - ~/distribute-im-gateway/deploy/data/redis/volumes:/data  # 持久化存储数据
   # prometheus-test:
   #   volumes:
   #     - ./data/monitor/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
   # grafana-test:
   #   volumes:
   #     - ./data/monitor/grafana/volumes:/var/lib/grafana
-  # redis-test:
-  #   volumes:
-  #     - ./data/redis/volumes:/data  # 持久化存储数据
+
 
   # mysqld-exporter:
   #   volumes:
